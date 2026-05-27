@@ -346,9 +346,9 @@ Legend: `[ ]` pending · `[~]` in progress · `[x]` complete · `[-]` deferred
 
 | # | Task | Status |
 |---|------|--------|
-| 4.1 | Per-service module archetype (parent pom + api/services/dao/entities/common/utils) + base `BaseRequest`/`BaseResponse`/`BaseEntity` in `<svc>-common` | [ ] |
-| 4.2 | Lombok + Liquibase (startup migrations) + H2/Postgres profile wiring shared across services | [ ] |
-| 4.3 | `employee-service` (6 modules) — CRUD + skills, Req/Resp DTOs, iface+impl | [ ] |
+| 4.1 | Per-service module archetype (parent pom + api/services/dao/entities/common/utils) + base `BaseRequest`/`BaseResponse`/`BaseEntity` in `<svc>-common` | [x] |
+| 4.2 | Lombok + Liquibase (startup migrations) + H2/Postgres profile wiring (via generated secrets) | [x] |
+| 4.3 | `employee-service` (6 modules) — CRUD, Req/Resp DTOs, iface+impl. **Built + runtime-verified** (Liquibase on startup, H2, UUID PKs, paginated/searchable list) | [x] |
 | 4.4 | `project-service` (6 modules) — projects + briefs ingestion | [ ] |
 | 4.5 | `allocation-service` (6 modules) — triggers Agents, persists results | [ ] |
 | 4.6 | `notification-service` (6 modules) — consumes notification rows (email stub) | [ ] |
