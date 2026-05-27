@@ -23,19 +23,24 @@ Composition: `environments/dev` (module names are the `-target`s the workflows u
 Workflows are numbered by dependency order; deploy ascending, destroy descending.
 `terraform validate` + `terraform fmt` are clean.
 
-## CI auth & state (GitHub OIDC — no static keys)
+## CI auth & state (AWS access keys in GitHub Secrets)
 
-Configure these repo secrets:
+The AWS Deploy/Destroy workflows are **manual only** (`workflow_dispatch`) and
+authenticate with AWS access keys stored in GitHub repository secrets:
 
 | Secret | Purpose |
 |--------|---------|
-| `AWS_DEPLOY_ROLE_ARN` | IAM role the workflow assumes via OIDC (trust GitHub's OIDC provider) |
+| `AWS_ACCESS_KEY_ID` | IAM user access key id (deploy permissions) |
+| `AWS_SECRET_ACCESS_KEY` | IAM user secret access key |
 | `TF_STATE_BUCKET` | S3 bucket for remote state |
 | `TF_LOCK_TABLE` | DynamoDB table for state locking |
 | `EPAA_DB_PASSWORD` | RDS master password (`TF_VAR_db_password`) |
 
-One-time bootstrap (outside these workflows): the S3 state bucket, DynamoDB lock
-table, and the GitHub OIDC identity provider + the deploy role's trust policy.
+One-time bootstrap (outside these workflows): the deploy IAM user + keys, the S3
+state bucket, and the DynamoDB lock table.
+
+> Access keys are simpler than OIDC but are long-lived — scope the IAM user
+> tightly and rotate the keys periodically.
 
 ## Local
 

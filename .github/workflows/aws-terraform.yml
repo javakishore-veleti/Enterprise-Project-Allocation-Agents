@@ -1,7 +1,8 @@
 name: AWS Terraform (reusable)
 
 # Reusable workflow: runs terraform apply/destroy against the dev environment,
-# targeting one or more modules. Auth via GitHub OIDC (no static AWS keys).
+# targeting one or more modules. Auth via AWS access keys stored in GitHub
+# repository secrets (AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY).
 on:
   workflow_call:
     inputs:
@@ -19,7 +20,6 @@ on:
         type: string
 
 permissions:
-  id-token: write
   contents: read
 
 jobs:
@@ -33,10 +33,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Configure AWS credentials (OIDC)
+      - name: Configure AWS credentials (access keys from GitHub Secrets)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
       - uses: hashicorp/setup-terraform@v3

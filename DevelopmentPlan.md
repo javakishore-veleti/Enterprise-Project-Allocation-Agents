@@ -421,8 +421,10 @@ Legend: `[ ]` pending · `[~]` in progress · `[x]` complete · `[-]` deferred
 
 | # | Task | Status |
 |---|------|--------|
-> All modules `terraform validate` + `fmt` clean; all 15 workflow YAMLs lint clean. Apply requires AWS
-> creds + the bootstrap (state bucket, lock table, OIDC role) — see DevOps/AWS/Terraform/README.md.
+> All modules `terraform validate` + `fmt` clean; all 15 workflow YAMLs lint clean. AWS Deploy/Destroy
+> workflows are **manual-only** (`workflow_dispatch`) and auth via **AWS access keys in GitHub Secrets**
+> (`AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY`). Apply requires those + the bootstrap (state bucket, lock
+> table) — see DevOps/AWS/Terraform/README.md.
 
 | # | Task | Status |
 | 7.1 | Terraform module: `vpc` (subnets, IGW, NAT, routes) | [x] |
@@ -439,7 +441,7 @@ Legend: `[ ]` pending · `[~]` in progress · `[x]` complete · `[-]` deferred
 | 7.12 | `005-AWS-Deploy-ECS.yml` + Destroy | [x] |
 | 7.13 | `006-AWS-Deploy-Cognito.yml` + Destroy | [x] |
 | 7.14 | `007-AWS-Deploy-CloudFront.yml` + Destroy | [x] |
-| 7.15 | OIDC trust + reusable `aws-terraform.yml` (no static keys); secrets documented | [x] |
+| 7.15 | Reusable `aws-terraform.yml` (manual-only callers; AWS keys from GitHub Secrets); secrets documented | [x] |
 | 7.16 | ECS task definitions/services per app (agents, datalake, 6 Spring) on the cluster | [ ] |
 | 7.17 | Apply to a real AWS account (needs creds + bootstrap) | [ ] |
 
