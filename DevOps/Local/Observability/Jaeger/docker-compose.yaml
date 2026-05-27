@@ -1,0 +1,24 @@
+name: epaa-jaeger
+
+# Jaeger all-in-one for local tracing. Accepts OTLP from every service
+# (Agents + Middleware) on 4317 (gRPC) / 4318 (HTTP).
+
+services:
+  jaeger:
+    image: jaegertracing/all-in-one:1.62.0
+    pull_policy: missing
+    container_name: epaa-jaeger
+    restart: unless-stopped
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    ports:
+      - "${JAEGER_UI_PORT:-16686}:16686"   # UI
+      - "4317:4317"                         # OTLP gRPC
+      - "4318:4318"                         # OTLP HTTP
+    networks:
+      - epaa-net
+
+networks:
+  epaa-net:
+    external: true
+    name: epaa-net

@@ -8,11 +8,20 @@
 *.key
 aws-credentials*
 **/secrets/
+# Spring Boot local secrets — generated from .env by npm run secrets:gen
+**/application-local-secrets.yaml
+*.bak
 
 # ─────────────────────────────────────────────────────────────
 # IEEE paper (copyright — never commit; kept outside the repo)
 # ─────────────────────────────────────────────────────────────
 *.pdf
+
+# ─────────────────────────────────────────────────────────────
+# H2 local database files
+# ─────────────────────────────────────────────────────────────
+*.mv.db
+*.trace.db
 
 # ─────────────────────────────────────────────────────────────
 # Java / Maven (Middleware)

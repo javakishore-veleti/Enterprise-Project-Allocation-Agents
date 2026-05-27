@@ -1,0 +1,28 @@
+name: epaa-grafana
+
+services:
+  grafana:
+    image: grafana/grafana:10.4.2
+    pull_policy: missing
+    container_name: epaa-grafana
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
+    ports:
+      - "${GRAFANA_PORT:-3000}:3000"
+    volumes:
+      - ./provisioning:/etc/grafana/provisioning:ro
+      - epaa-grafana-data:/var/lib/grafana
+    networks:
+      - epaa-net
+
+volumes:
+  epaa-grafana-data:
+
+networks:
+  epaa-net:
+    external: true
+    name: epaa-net

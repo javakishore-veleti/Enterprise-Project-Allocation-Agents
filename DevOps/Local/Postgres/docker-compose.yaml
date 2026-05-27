@@ -1,0 +1,53 @@
+name: epaa-postgres
+
+# Postgres 16 with the pgvector extension pre-installed (Skill-Matching Agent
+# stores employee/requirement embeddings here). pgAdmin is included for a UI.
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    pull_policy: missing        # reuse the local pg16 image; never re-pull
+    container_name: epaa-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-epaa}
+      POSTGRES_USER: ${POSTGRES_USER:-epaa}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-epaa_local}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - epaa-pgdata:/var/lib/postgresql/data
+      - ./init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-epaa} -d ${POSTGRES_DB:-epaa}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - epaa-net
+
+  pgadmin:
+    image: dpage/pgadmin4:8.12
+    pull_policy: missing
+    container_name: epaa-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@epaa.local}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - epaa-net
+
+volumes:
+  epaa-pgdata:
+
+networks:
+  epaa-net:
+    external: true
+    name: epaa-net

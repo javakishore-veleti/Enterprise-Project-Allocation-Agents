@@ -125,36 +125,43 @@ AutomatedEnterpriseProjectAllocation/
 │   ├── data-model.md
 │   └── diagrams/
 │
-├── Agents/                               # Python — Strands Agents
-│   ├── pyproject.toml
-│   ├── Dockerfile
-│   ├── README.md
-│   ├── src/mcp_ai/
-│   │   ├── agents/
-│   │   │   ├── requirement_parsing_agent.py
-│   │   │   ├── skill_matching_agent.py
-│   │   │   ├── availability_checker_agent.py
-│   │   │   ├── assignment_agent.py
-│   │   │   ├── communication_agent.py
-│   │   │   └── reporting_agent.py
-│   │   ├── orchestrator/                 # multi-agent coordination + tracing
-│   │   ├── providers/                    # bedrock.py, openai.py, hf.py, langchain.py
-│   │   ├── tools/                        # shared tools: db, embeddings, vector store
-│   │   ├── models/                       # pydantic schemas
-│   │   ├── api/                          # FastAPI routes
-│   │   ├── synthetic/                    # synthetic data generator (CLI)
-│   │   └── observability/                # otel + prometheus instrumentation
-│   └── tests/
-│
-├── Middleware/                           # Spring Boot microservices
-│   ├── pom.xml                           # parent BOM + plugin mgmt
-│   ├── common-lib/                       # shared DTOs, config, security
-│   ├── api-gateway/                      # Spring Cloud Gateway + JWT
-│   ├── employee-service/                 # employees, skills, profiles
-│   ├── project-service/                  # projects + briefs
+├── Middleware/                           # backend — Java microservices + Python agents
+│   ├── pom.xml                           # parent BOM (aggregates the Java modules only)
+│   ├── Agents/                           # Python — Strands Agents (the 6 agents) + FastAPI
+│   │   ├── pyproject.toml
+│   │   ├── Dockerfile
+│   │   ├── README.md
+│   │   ├── src/epaa/
+│   │   │   ├── agents/
+│   │   │   │   ├── requirement_parsing_agent.py
+│   │   │   │   ├── skill_matching_agent.py
+│   │   │   │   ├── availability_checker_agent.py
+│   │   │   │   ├── assignment_agent.py
+│   │   │   │   ├── communication_agent.py
+│   │   │   │   └── reporting_agent.py
+│   │   │   ├── orchestrator/             # multi-agent coordination + tracing
+│   │   │   ├── providers/                # bedrock.py, openai.py, hf.py, langchain.py
+│   │   │   ├── tools/                    # shared tools: db, embeddings, vector store
+│   │   │   ├── models/                   # pydantic schemas
+│   │   │   ├── api/                      # FastAPI routes
+│   │   │   └── observability/            # otel + prometheus instrumentation
+│   │   └── tests/
+│   ├── Datalake/                         # synthetic data (Python)
+│   │   ├── SyntheticDataAPI/             # FastAPI (src/epaa_datalake) — triggers the DAG async
+│   │   └── DAGS/SyntheticDataGen/        # Airflow DAG — generate + load employees/projects/briefs
+│   ├── employee-service/                 # each domain service = per-service Maven multi-module:
+│   │   ├── pom.xml                       #   parent
+│   │   ├── employee-api/                 #   Spring Boot main; deps on the modules below
+│   │   ├── employee-services/            #   service interfaces + Impl
+│   │   ├── employee-dao/                 #   repositories
+│   │   ├── employee-entities/            #   JPA entities (UUID-string PKs)
+│   │   ├── employee-common/              #   base entity + base Req/Resp DTOs
+│   │   └── employee-utils/
+│   ├── project-service/                  # (same 6-module layout)
 │   ├── allocation-service/               # allocations; calls Agents
 │   ├── notification-service/             # email/slack (stub locally)
-│   └── reporting-service/                # report read-models
+│   ├── reporting-service/                # report read-models
+│   └── api-gateway/                      # Spring Cloud Gateway + JWT
 │
 ├── Portals/
 │   ├── admin-portal/                     # Angular 18
@@ -174,51 +181,39 @@ AutomatedEnterpriseProjectAllocation/
 │           ├── auth/
 │           └── shared/
 │
-├── SyntheticData/                        # generated JSON fixtures (gitignored except samples)
-│   ├── samples/
-│   └── README.md
-│
 ├── DevOps/
 │   ├── Local/
-│   │   ├── docker-all-up.sh              # brings up Postgres → Observability → Agents → Middleware → Portals
+│   │   ├── docker-all-up.sh              # up: infra → airflow → agents → middleware → portals
 │   │   ├── docker-all-down.sh
 │   │   ├── docker-all-status.sh
+│   │   ├── scripts/
+│   │   │   └── gen-spring-secrets.mjs    # generate application-local-secrets.yaml from .env
 │   │   ├── Postgres/
-│   │   │   ├── docker-compose.yaml       # postgres:16 + pgvector + pgAdmin
+│   │   │   ├── docker-compose.yaml       # pgvector/pgvector:pg16 + pgAdmin
 │   │   │   └── init/
-│   │   │       ├── 01-extensions.sql     # CREATE EXTENSION vector;
-│   │   │       └── 02-schema.sql
+│   │   │       ├── 01-extensions.sql     # vector, uuid-ossp, pg_trgm
+│   │   │       └── 02-schema.sql         # epaa schema (tables in M2)
+│   │   ├── Observability/                # (moved here from repo root)
+│   │   │   ├── Prometheus/{docker-compose.yaml, prometheus.yml}
+│   │   │   ├── Grafana/{docker-compose.yaml, provisioning/}
+│   │   │   ├── Jaeger/docker-compose.yaml
+│   │   │   └── Kibana/docker-compose.yaml  # Elasticsearch + Kibana
+│   │   ├── Airflow/
+│   │   │   └── docker-compose.yaml       # LocalExecutor; reuses apache/airflow:2.10.0-python3.12
 │   │   ├── VectorDBs/                    # OPTIONAL alternative to pgvector
 │   │   │   └── Qdrant/docker-compose.yaml
 │   │   ├── Agents/
 │   │   │   └── docker-compose.yaml
 │   │   ├── Middleware/
-│   │   │   └── docker-compose.yaml       # all 6 Spring Boot services
+│   │   │   └── docker-compose.yaml       # the 6 Spring Boot services
 │   │   └── Portals/
 │   │       └── docker-compose.yaml       # nginx + admin + customer portals
 │   └── AWS/
 │       └── Terraform/
 │           ├── modules/
-│           │   ├── vpc/
-│           │   ├── bedrock/              # model-access policies
-│           │   ├── sagemaker/            # studio + endpoints
-│           │   ├── rds/                  # Postgres + pgvector
-│           │   ├── ecs/                  # Fargate services
-│           │   ├── cognito/              # auth for portals
-│           │   └── cloudfront/           # static hosting for Angular
+│           │   ├── vpc/  · bedrock/  · sagemaker/  · rds/
+│           │   ├── ecs/  · cognito/  · cloudfront/
 │           └── environments/dev/
-│
-├── Observability/
-│   ├── Grafana/
-│   │   ├── docker-compose.yaml
-│   │   └── provisioning/
-│   │       ├── datasources/
-│   │       └── dashboards/
-│   ├── Jaeger/
-│   │   └── docker-compose.yaml           # all-in-one for local
-│   └── Prometheus/
-│       ├── docker-compose.yaml
-│       └── prometheus.yml                # scrape targets: agents:9100, gateway:9100, …
 │
 └── .github/
     └── workflows/
@@ -282,31 +277,48 @@ Legend: `[ ]` pending · `[~]` in progress · `[x]` complete · `[-]` deferred
 
 | # | Task | Status |
 |---|------|--------|
-| 1.1 | `DevOps/Local/Postgres/docker-compose.yaml` (postgres:16 + pgvector + pgAdmin) | [ ] |
-| 1.2 | `init/01-extensions.sql` + `init/02-schema.sql` | [ ] |
-| 1.3 | `Observability/Prometheus/` + `prometheus.yml` | [ ] |
-| 1.4 | `Observability/Grafana/` + provisioned datasources + starter dashboards | [ ] |
-| 1.5 | `Observability/Jaeger/docker-compose.yaml` (all-in-one) | [ ] |
-| 1.6 | `DevOps/Local/VectorDBs/Qdrant/` (optional, alt to pgvector) | [-] |
-| 1.7 | `DevOps/Local/docker-all-up.sh` / `down.sh` / `status.sh` (orchestrate above) | [ ] |
-| 1.8 | Root `package.json` with start/stop/status scripts | [ ] |
+| 1.1 | `DevOps/Local/Postgres/docker-compose.yaml` (pgvector/pgvector:pg16 + pgAdmin) | [x] |
+| 1.2 | `init/01-extensions.sql` (vector, uuid-ossp, pg_trgm) + `init/02-schema.sql` (epaa schema) | [x] |
+| 1.3 | `DevOps/Local/Observability/Prometheus/` + `prometheus.yml` | [x] |
+| 1.4 | `DevOps/Local/Observability/Grafana/` + provisioned datasources (Prometheus + Jaeger) | [x] |
+| 1.5 | `DevOps/Local/Observability/Jaeger/docker-compose.yaml` (all-in-one OTLP) | [x] |
+| 1.6 | `DevOps/Local/Observability/Kibana/docker-compose.yaml` (Elasticsearch + Kibana) | [x] |
+| 1.7 | `DevOps/Local/Airflow/docker-compose.yaml` (LocalExecutor; reuses local airflow image) | [x] |
+| 1.8 | `DevOps/Local/scripts/gen-spring-secrets.mjs` (generate secrets yaml from `.env`, diff-aware) | [x] |
+| 1.9 | `DevOps/Local/docker-all-up.sh` / `down.sh` / `status.sh` (layer-aware, reuse local images) | [x] |
+| 1.10 | Root `package.json` scripts incl. `secrets:gen` + `prestart` hook | [x] |
+| 1.11 | `DevOps/Local/VectorDBs/Qdrant/` (optional, alt to pgvector) | [-] |
+| 1.12 | Verified: Postgres boots from local image; pgvector 0.8.2 + epaa schema confirmed | [x] |
 
-### M2 — Data Layer & Synthetic Data (Category: Data)
+### M2 — Data Layer & Datalake (Category: Data)
+
+> All under `Middleware/Datalake/`. Schema is created by **Alembic** migrations (auto-run on startup),
+> with matching **Liquibase** changelogs for the Spring services. PKs are UUID-as-String.
+
+**Data generated** — both relational and textual:
+- *Relational:* `employees`, `skills`, `employee_skills` (M:N, proficiency), `projects`, `availability`
+  (calendar bookings), seeded `allocations`.
+- *Textual (unstructured):* `project_briefs.brief_text` (NL brief → Requirement Parsing Agent),
+  `employees.profile_text` (bio → Skill-Matching Agent).
+- *Vectors:* `employees.profile_embedding`, `project_briefs.requirements_embedding` (pgvector).
 
 | # | Task | Status |
 |---|------|--------|
-| 2.1 | Postgres schema: employees, skills, employee_skills, projects, project_briefs, availability, allocations, agent_runs, agent_steps, notifications, reports | [ ] |
+| 2.1 | Alembic migrations for schema: employees, skills, employee_skills, projects, project_briefs, availability, allocations, agent_runs, agent_steps, notifications, reports (UUID-string PKs) | [ ] |
 | 2.2 | pgvector columns: `employees.profile_embedding`, `project_briefs.requirements_embedding` | [ ] |
-| 2.3 | Synthetic data generator (Python CLI): 30–100 employees, 10–40 projects, unstructured briefs, calendars | [ ] |
-| 2.4 | Embeddings backfill job (Bedrock Titan or HF MiniLM) | [ ] |
-| 2.5 | Sample fixtures committed to `SyntheticData/samples/` | [ ] |
+| 2.3 | Skill taxonomy + structured generators (Faker): 30–100 employees, 10–40 projects, availability | [ ] |
+| 2.4 | Text generation — hybrid: template/Faker default, `--use-llm` (Bedrock) for realistic briefs/bios | [ ] |
+| 2.5 | Embeddings backfill (Bedrock Titan / HF MiniLM) into pgvector | [ ] |
+| 2.6 | `DAGS/SyntheticDataGen` Airflow DAG: generate → embed → load into Postgres | [ ] |
+| 2.7 | `SyntheticDataAPI` FastAPI: `POST /synthetic/generate` triggers DAG (async) + `GET /runs/{id}` | [ ] |
+| 2.8 | Curated sample fixtures committed under `Middleware/Datalake/SyntheticDataAPI/samples/` | [ ] |
 
 ### M3 — Agents Layer (Category: AI / Agents)
 
 | # | Task | Status |
 |---|------|--------|
-| 3.1 | `Agents/` Python project (`pyproject.toml`, ruff, pytest, otel) | [ ] |
-| 3.2 | LLM provider interface + Bedrock impl (Claude Sonnet 4.6) | [ ] |
+| 3.1 | `Middleware/Agents/` Python project (`pyproject.toml`, ruff, pytest, otel, Alembic on startup) | [ ] |
+| 3.2 | LLM provider interface + Bedrock impl (Claude Opus 4.7) | [ ] |
 | 3.3 | Embedding provider interface + Bedrock Titan / HF MiniLM impls | [ ] |
 | 3.4 | Vector store adapter (pgvector primary, Qdrant optional) | [ ] |
 | 3.5 | Agent 1 — Requirement Parsing (structured JSON output via Strands tool calling) | [ ] |
@@ -322,17 +334,24 @@ Legend: `[ ]` pending · `[~]` in progress · `[x]` complete · `[-]` deferred
 
 ### M4 — Middleware / Microservices (Category: Backend)
 
+> **Conventions (mandatory — see CLAUDE.md §7):** each service is a per-service Maven multi-module
+> (`<svc>-api` deployable + `-services`/`-dao`/`-entities`/`-common`/`-utils`); every controller and
+> service method takes a Request DTO and returns a Response DTO (no scalar param lists); services are
+> interface + Impl; Lombok everywhere; Liquibase runs on startup; **H2 default** (Postgres via
+> `DB_PROFILE`); UUID-string PKs; `application-local-secrets.yaml` generated from `.env` via
+> `npm run secrets:gen`.
+
 | # | Task | Status |
 |---|------|--------|
-| 4.1 | Parent `pom.xml` + `common-lib` (DTOs, security, error model) | [ ] |
-| 4.2 | `employee-service` — CRUD + skills | [ ] |
-| 4.3 | `project-service` — projects + briefs ingestion | [ ] |
-| 4.4 | `allocation-service` — triggers Agents, persists results | [ ] |
-| 4.5 | `notification-service` — consumes notification rows (email stub) | [ ] |
-| 4.6 | `reporting-service` — read-model for Reports page | [ ] |
-| 4.7 | `api-gateway` (Spring Cloud Gateway) + JWT validation | [ ] |
-| 4.8 | Springdoc OpenAPI on every service | [ ] |
-| 4.9 | OpenTelemetry agent in each Dockerfile | [ ] |
+| 4.1 | Per-service module archetype (parent pom + api/services/dao/entities/common/utils) + base `BaseRequest`/`BaseResponse`/`BaseEntity` in `<svc>-common` | [ ] |
+| 4.2 | Lombok + Liquibase (startup migrations) + H2/Postgres profile wiring shared across services | [ ] |
+| 4.3 | `employee-service` (6 modules) — CRUD + skills, Req/Resp DTOs, iface+impl | [ ] |
+| 4.4 | `project-service` (6 modules) — projects + briefs ingestion | [ ] |
+| 4.5 | `allocation-service` (6 modules) — triggers Agents, persists results | [ ] |
+| 4.6 | `notification-service` (6 modules) — consumes notification rows (email stub) | [ ] |
+| 4.7 | `reporting-service` (6 modules) — read-model for Reports page | [ ] |
+| 4.8 | `api-gateway` (Spring Cloud Gateway) + JWT validation | [ ] |
+| 4.9 | Springdoc OpenAPI + OpenTelemetry on every service | [ ] |
 | 4.10 | `DevOps/Local/Middleware/docker-compose.yaml` | [ ] |
 
 ### M5 — Portals (Category: Frontend)

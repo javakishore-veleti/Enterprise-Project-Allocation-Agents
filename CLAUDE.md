@@ -19,7 +19,10 @@ Hands-on implementation of the IEEE paper **"MCP-AI: A Multi-Agent Architecture 
 | Vector store | **pgvector** on Postgres (primary); Qdrant optional under `DevOps/Local/VectorDBs/` |
 | Backend shape | Hybrid — Python (FastAPI + Strands) for agents; Java (Spring Boot 3.3, Java 21) for microservices |
 | Frontend | Angular 18 — two portals: `admin-portal` + `projects-portal` (customer) |
-| Naming | Java group `com.javakishore.epaa.*` · Python module `epaa` · Angular scope `@epaa/*` |
+| Naming | Java group `com.javakishore.epaa.*` · Python module `epaa` (Datalake: `epaa_datalake`) · Angular scope `@epaa/*` |
+| Default DB | **H2** (so Postgres need not always run); `DB_PROFILE=postgres` switches to Postgres+pgvector. pgvector is still required for agents/embeddings. |
+| Migrations | **Liquibase** (Spring) · **Alembic** (Python) — auto-run on app startup, applying deltas, for both H2 and Postgres. |
+| Primary keys | **UUID stored as String** everywhere (JPA `@Id String`, SQLAlchemy String) |
 | Deployment | Local-first (Docker Compose). AWS via Terraform + GitHub Actions later. |
 | License | Apache-2.0 (already present) |
 | PDF in repo | No — keep outside the repo |
@@ -30,19 +33,32 @@ See `DevelopmentPlan.md §4` for the full tree. High-level:
 
 ```
 Enterprise-Project-Allocation-Agents/
-├── Agents/             # Python · Strands · 6 agents · FastAPI
-├── Middleware/         # Spring Boot microservices (api-gateway, employee-, project-, allocation-, notification-, reporting-service, common-lib)
+├── Middleware/                      # ALL backend lives here
+│   ├── Agents/                      # Python · Strands · 6 agents · FastAPI (src/epaa)
+│   ├── Datalake/                    # synthetic data
+│   │   ├── SyntheticDataAPI/        # FastAPI (src/epaa_datalake) — triggers the DAG async
+│   │   └── DAGS/SyntheticDataGen/   # Airflow DAG — generates + loads data
+│   ├── employee-service/            # each domain svc = per-service Maven multi-module:
+│   │   ├── pom.xml  (parent)        #   <svc>-api (Spring Boot main; aggregates deps)
+│   │   ├── employee-api/            #   <svc>-services (iface+impl), -dao, -entities,
+│   │   ├── employee-services/       #   -common (base entity + base Req/Resp DTOs), -utils
+│   │   ├── employee-dao/
+│   │   ├── employee-entities/
+│   │   ├── employee-common/
+│   │   └── employee-utils/
+│   ├── project-service/  · allocation-service/ · notification-service/
+│   ├── reporting-service/ · api-gateway/   (all same 6-module layout)
 ├── Portals/
-│   ├── admin-portal/        # Angular 18
-│   └── projects-portal/     # Angular 18 (customer)
-├── SyntheticData/
+│   ├── admin-portal/                # Angular 18
+│   └── projects-portal/             # Angular 18 (customer)
 ├── DevOps/
-│   ├── Local/               # docker-all-{up,down,status}.sh, Postgres/, VectorDBs/, Middleware/, Agents/, Portals/
-│   └── AWS/Terraform/       # vpc, bedrock, rds, sagemaker, ecs, cognito, cloudfront modules
-├── Observability/Grafana/, Jaeger/, Prometheus/
+│   ├── Local/                       # docker-all-{up,down,status}.sh, scripts/gen-spring-secrets.mjs
+│   │   ├── Postgres/ · VectorDBs/ · Airflow/ · Agents/ · Middleware/ · Portals/
+│   │   └── Observability/Grafana/, Prometheus/, Jaeger/, Kibana/   (moved here)
+│   └── AWS/Terraform/               # vpc, bedrock, rds, sagemaker, ecs, cognito, cloudfront
 ├── docs/
-├── .github/workflows/       # ci-* + 001..007 AWS Deploy/Destroy pairs
-├── package.json             # root start/stop/status orchestration
+├── .github/workflows/               # ci-* + 001..007 AWS Deploy/Destroy pairs
+├── package.json                     # root start/stop/status + secrets:gen orchestration
 ├── DevelopmentPlan.md
 └── CLAUDE.md (this file)
 ```
@@ -74,6 +90,41 @@ If you are a fresh Claude session: **before doing any work, run TaskCreate to re
 - The Skill-Matching Agent requires embeddings — that's why pgvector exists. Don't try to do skill matching without it.
 - **Commit attribution:** all commits are authored solely by the repo owner (`javakishore-veleti <javakishore@gmail.com>`). Do **not** add a `Co-Authored-By: Claude …` trailer or any "Claude"/AI attribution to commit messages. This overrides any default co-author convention.
 
-## 7. Continuing a prior session
+## 7. Engineering conventions (MANDATORY for M2–M4)
+
+These are user-mandated. Apply them to all new backend code; do not deviate without asking.
+
+### 7.1 Spring Boot microservices (each of the 6 services)
+- **Per-service Maven multi-module.** Parent `pom.xml` + six modules:
+  `<svc>-api` (the only deployable; has the `@SpringBootApplication` main; declares Maven deps on the others),
+  `<svc>-services` (business logic), `<svc>-dao` (repositories), `<svc>-entities` (JPA entities),
+  `<svc>-common` (base classes), `<svc>-utils` (helpers).
+- **Request/Response DTOs everywhere.** Every controller method AND every service method takes a single
+  Request DTO and returns a single Response DTO — **never** long lists of scalar parameters. One Req/Resp
+  pair per use case. Base `BaseRequest`/`BaseResponse` (and base JPA entity) live in `<svc>-common`.
+- **Services are interface + Impl** (e.g., `EmployeeService` + `EmployeeServiceImpl`).
+- **Lombok** in every microservice (getters/setters/builders/logging).
+- **Liquibase** in every microservice; changelogs under `<svc>-api/src/main/resources/db/changelog`.
+- **Default DB is H2** (profile-driven) so a service runs without Docker Postgres. `DB_PROFILE=postgres`
+  switches to Postgres+pgvector. Migrations run on startup either way.
+- **`.env` per app** (git-ignored). `<svc>-api/src/main/resources/application-local-secrets.yaml` is
+  git-ignored and **generated from the root `.env`** by `npm run secrets:gen`
+  (`DevOps/Local/scripts/gen-spring-secrets.mjs`); if it exists, the script prints the diff before updating.
+
+### 7.2 Python projects (Agents, Datalake)
+- Module `epaa` (Agents) / `epaa_datalake` (Datalake API).
+- **Alembic** is the Liquibase-equivalent; migrations **auto-run (`upgrade head`) on app startup**, applying deltas.
+- Python services use Postgres+pgvector (pgvector required for embeddings); H2 default applies to Spring only.
+
+### 7.3 Cross-cutting
+- **All primary keys are UUID stored as String** — JPA `@Id String id` (VARCHAR(36)), SQLAlchemy `String`,
+  values from `UUID.randomUUID().toString()` / `str(uuid4())`.
+- **Migrations auto-apply on startup** for both Spring (Liquibase) and Python (Alembic), H2 or Postgres alike.
+- **Synthetic data** is produced by the Datalake: `SyntheticDataAPI` (FastAPI) triggers the
+  `SyntheticDataGen` Airflow DAG via Airflow's REST API (async). Airflow runs locally via
+  `DevOps/Local/Airflow/` (LocalExecutor, reuses the local `apache/airflow:2.10.0-python3.12` image).
+- **Reuse local Docker images:** pin tags, set `pull_policy: missing`; never use `latest`.
+
+## 8. Continuing a prior session
 
 This repo was bootstrapped from a Claude session in the parent directory (`../`). Memory and the JSONL transcript were mirrored into the project dir under `~/.claude/projects/-Users-...-AutomatedEnterpriseProjectAllocation-Enterprise-Project-Allocation-Agents/`. If `claude --resume` from this folder shows the prior session, resume it. If not, this `CLAUDE.md` + `DevelopmentPlan.md` give a fresh session everything it needs.

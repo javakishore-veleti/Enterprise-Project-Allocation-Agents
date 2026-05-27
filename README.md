@@ -51,33 +51,39 @@ Full architecture, folder layout, and the milestone roadmap live in **[Developme
 
 ```
 .
-├── Agents/             # Python · Strands · 6 agents · FastAPI
-├── Middleware/         # Spring Boot microservices + common-lib
-├── Portals/            # admin-portal/ + projects-portal/ (Angular 18)
-├── SyntheticData/      # generator + curated samples
+├── Middleware/                 # ALL backend
+│   ├── Agents/                 # Python · Strands · 6 agents · FastAPI
+│   ├── Datalake/               # SyntheticDataAPI (FastAPI) + DAGS/SyntheticDataGen (Airflow)
+│   ├── employee-service/       # each domain svc = per-service Maven multi-module
+│   ├── project-service/  · allocation-service/  · notification-service/
+│   ├── reporting-service/  · api-gateway/
+├── Portals/                    # admin-portal/ + projects-portal/ (Angular 18)
 ├── DevOps/
-│   ├── Local/          # docker-all-{up,down,status}.sh + per-area compose files
-│   └── AWS/Terraform/  # IaC modules
-├── Observability/      # Grafana/ · Prometheus/ · Jaeger/
+│   ├── Local/                  # docker-all-{up,down,status}.sh, scripts/, per-area compose
+│   │   └── Observability/      # Grafana/ · Prometheus/ · Jaeger/ · Kibana/
+│   └── AWS/Terraform/          # IaC modules
 ├── docs/
-├── .github/workflows/  # CI + numbered AWS Deploy/Destroy pairs
-├── package.json        # root start/stop/status orchestration
-├── DevelopmentPlan.md  # source of truth for scope & progress
-└── CLAUDE.md           # session context for AI-assisted work
+├── .github/workflows/          # CI + numbered AWS Deploy/Destroy pairs
+├── package.json                # root start/stop/status + secrets:gen orchestration
+├── DevelopmentPlan.md          # source of truth for scope & progress
+└── CLAUDE.md                   # session context for AI-assisted work
 ```
 
 ## Quick start (local)
 
-> Prerequisites: Docker, Node 20+, Python 3.12, JDK 21, an AWS account with Bedrock model access (Claude Opus 4.7) in `us-east-1`.
+> Prerequisites: Docker, Node 20+, Python 3.12, JDK 21. Bedrock (Claude Opus 4.7, `us-east-1`) is
+> needed for the agents and for LLM-generated synthetic text; the Spring services default to **H2**, so
+> Postgres is only required for the agents/embeddings + Datalake.
 
 ```bash
-# 1. Configure environment
-cp .env.example .env          # then fill in AWS + Postgres values
+# 1. Configure environment (the start script also auto-creates .env if missing)
+cp .env.example .env          # then fill in AWS values
 
-# 2. Bring everything up (Postgres, observability, agents, middleware, portals)
+# 2. Bring everything up (infra → airflow → agents → middleware → portals).
+#    secrets:gen runs first (prestart) to materialise application-local-secrets.yaml.
 npm run start
 
-# 3. Seed synthetic data (30–100 employees, 10–40 projects)
+# 3. Seed synthetic data — triggers the SyntheticDataGen Airflow DAG via the Datalake API
 npm run seed
 
 # 4. Open the portals

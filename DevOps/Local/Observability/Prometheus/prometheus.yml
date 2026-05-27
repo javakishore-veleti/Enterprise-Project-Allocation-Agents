@@ -1,0 +1,31 @@
+# Prometheus scrape config for the EPAA local stack.
+# Services resolve by container name on the shared `epaa-net` network.
+# Targets that are not running yet (later milestones) are listed now and will
+# simply show as "down" until their services come up — that is expected.
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Agents service (Python / FastAPI) — exposes /metrics (M3)
+  - job_name: epaa-agents
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['epaa-agents:8001']
+
+  # Spring Boot microservices — Actuator Prometheus endpoint (M4)
+  - job_name: epaa-middleware
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets:
+          - 'epaa-api-gateway:8080'
+          - 'epaa-employee-service:8081'
+          - 'epaa-project-service:8082'
+          - 'epaa-allocation-service:8083'
+          - 'epaa-notification-service:8084'
+          - 'epaa-reporting-service:8085'

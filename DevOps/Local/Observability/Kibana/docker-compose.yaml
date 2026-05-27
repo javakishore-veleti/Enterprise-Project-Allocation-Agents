@@ -1,0 +1,51 @@
+name: epaa-kibana
+
+# Log store + viewer. Elasticsearch holds service logs (shipped via OTel /
+# Filebeat once services exist in M3/M4); Kibana visualises them.
+# Note: these images are large and are NOT in your local cache yet — first
+# `up` will pull them. Security is disabled for local dev only.
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
+    pull_policy: missing
+    container_name: epaa-elasticsearch
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "${ELASTICSEARCH_PORT:-9200}:9200"
+    volumes:
+      - epaa-es-data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+    networks:
+      - epaa-net
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.15.0
+    pull_policy: missing
+    container_name: epaa-kibana
+    restart: unless-stopped
+    environment:
+      - ELASTICSEARCH_HOSTS=http://epaa-elasticsearch:9200
+    ports:
+      - "${KIBANA_PORT:-5601}:5601"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - epaa-net
+
+volumes:
+  epaa-es-data:
+
+networks:
+  epaa-net:
+    external: true
+    name: epaa-net

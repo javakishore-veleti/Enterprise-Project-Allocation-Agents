@@ -13,32 +13,38 @@
     "node": ">=20"
   },
   "scripts": {
-    "start": "npm run start:infra && npm run start:agents && npm run start:middleware && npm run start:portals",
-    "stop": "npm run stop:portals; npm run stop:middleware; npm run stop:agents; npm run stop:infra",
+    "secrets:gen": "node DevOps/Local/scripts/gen-spring-secrets.mjs",
+
+    "prestart": "npm run secrets:gen",
+    "start": "bash DevOps/Local/docker-all-up.sh all",
+    "stop": "bash DevOps/Local/docker-all-down.sh all",
     "status": "bash DevOps/Local/docker-all-status.sh",
 
     "start:infra": "bash DevOps/Local/docker-all-up.sh infra",
     "stop:infra": "bash DevOps/Local/docker-all-down.sh infra",
 
-    "start:postgres": "docker compose -f DevOps/Local/Postgres/docker-compose.yaml up -d",
-    "stop:postgres": "docker compose -f DevOps/Local/Postgres/docker-compose.yaml down",
+    "start:postgres": "bash DevOps/Local/docker-all-up.sh postgres",
+    "stop:postgres": "bash DevOps/Local/docker-all-down.sh postgres",
 
-    "start:observability": "docker compose -f Observability/Prometheus/docker-compose.yaml -f Observability/Grafana/docker-compose.yaml -f Observability/Jaeger/docker-compose.yaml up -d",
-    "stop:observability": "docker compose -f Observability/Prometheus/docker-compose.yaml -f Observability/Grafana/docker-compose.yaml -f Observability/Jaeger/docker-compose.yaml down",
+    "start:observability": "bash DevOps/Local/docker-all-up.sh observability",
+    "stop:observability": "bash DevOps/Local/docker-all-down.sh observability",
 
-    "start:vectordb": "docker compose -f DevOps/Local/VectorDBs/Qdrant/docker-compose.yaml up -d",
-    "stop:vectordb": "docker compose -f DevOps/Local/VectorDBs/Qdrant/docker-compose.yaml down",
+    "start:airflow": "bash DevOps/Local/docker-all-up.sh airflow",
+    "stop:airflow": "bash DevOps/Local/docker-all-down.sh airflow",
 
-    "start:agents": "docker compose -f DevOps/Local/Agents/docker-compose.yaml up -d",
-    "stop:agents": "docker compose -f DevOps/Local/Agents/docker-compose.yaml down",
+    "start:vectordb": "bash DevOps/Local/docker-all-up.sh vectordb",
+    "stop:vectordb": "bash DevOps/Local/docker-all-down.sh vectordb",
 
-    "start:middleware": "docker compose -f DevOps/Local/Middleware/docker-compose.yaml up -d",
-    "stop:middleware": "docker compose -f DevOps/Local/Middleware/docker-compose.yaml down",
+    "start:agents": "bash DevOps/Local/docker-all-up.sh agents",
+    "stop:agents": "bash DevOps/Local/docker-all-down.sh agents",
 
-    "start:portals": "docker compose -f DevOps/Local/Portals/docker-compose.yaml up -d",
-    "stop:portals": "docker compose -f DevOps/Local/Portals/docker-compose.yaml down",
+    "prestart:middleware": "npm run secrets:gen",
+    "start:middleware": "bash DevOps/Local/docker-all-up.sh middleware",
+    "stop:middleware": "bash DevOps/Local/docker-all-down.sh middleware",
 
-    "seed": "python -m epaa.synthetic.generator --load",
-    "logs": "bash DevOps/Local/docker-all-status.sh --logs"
+    "start:portals": "bash DevOps/Local/docker-all-up.sh portals",
+    "stop:portals": "bash DevOps/Local/docker-all-down.sh portals",
+
+    "seed": "curl -s -X POST http://localhost:8000/synthetic/generate"
   }
 }

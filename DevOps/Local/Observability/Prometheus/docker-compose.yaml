@@ -1,0 +1,26 @@
+name: epaa-prometheus
+
+services:
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    pull_policy: missing
+    container_name: epaa-prometheus
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.retention.time=7d'
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - epaa-prometheus-data:/prometheus
+    ports:
+      - "${PROMETHEUS_PORT:-9090}:9090"
+    networks:
+      - epaa-net
+
+volumes:
+  epaa-prometheus-data:
+
+networks:
+  epaa-net:
+    external: true
+    name: epaa-net
