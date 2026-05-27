@@ -349,13 +349,13 @@ Legend: `[ ]` pending · `[~]` in progress · `[x]` complete · `[-]` deferred
 | 4.1 | Per-service module archetype (parent pom + api/services/dao/entities/common/utils) + base `BaseRequest`/`BaseResponse`/`BaseEntity` in `<svc>-common` | [x] |
 | 4.2 | Lombok + Liquibase (startup migrations) + H2/Postgres profile wiring (via generated secrets) | [x] |
 | 4.3 | `employee-service` (6 modules) — CRUD, Req/Resp DTOs, iface+impl. **Built + runtime-verified** (Liquibase on startup, H2, UUID PKs, paginated/searchable list) | [x] |
-| 4.4 | `project-service` (6 modules) — projects + briefs ingestion | [ ] |
-| 4.5 | `allocation-service` (6 modules) — triggers Agents, persists results | [ ] |
-| 4.6 | `notification-service` (6 modules) — consumes notification rows (email stub) | [ ] |
-| 4.7 | `reporting-service` (6 modules) — read-model for Reports page | [ ] |
-| 4.8 | `api-gateway` (Spring Cloud Gateway) + JWT validation | [ ] |
-| 4.9 | Springdoc OpenAPI + OpenTelemetry on every service | [ ] |
-| 4.10 | `DevOps/Local/Middleware/docker-compose.yaml` | [ ] |
+| 4.4 | `project-service` (6 modules) — projects + briefs. Built clean. | [x] |
+| 4.5 | `allocation-service` (6 modules) — RestClient calls Agents `/allocations/run`, audits requests. Built clean. | [x] |
+| 4.6 | `notification-service` (6 modules) — notifications queue + deliver (log stub). Built clean. | [x] |
+| 4.7 | `reporting-service` (6 modules) — reports read-model + latest-for-project. Built clean. | [x] |
+| 4.8 | `api-gateway` (Spring Cloud Gateway) routing to all services. Built + boots healthy. JWT deferred → M5/M7. | [x] |
+| 4.9 | Springdoc OpenAPI on every service [x]; OpenTelemetry wiring → M6 | [~] |
+| 4.10 | Per-service Dockerfiles + `DevOps/Local/Middleware/docker-compose.yaml` → M6 (full-stack bring-up) | [ ] |
 
 ### M5 — Portals (Category: Frontend)
 

@@ -78,9 +78,10 @@ Enterprise-Project-Allocation-Agents/
 - M0.5 (Bootstrap): complete
 - M1 (Local infra: Postgres + Observability + Airflow + docker-all scripts): complete
 - M2 (Data layer + Datalake): complete — Alembic schema (UUID-string PKs, pgvector), generators, SyntheticDataAPI + DAG, wf_def/wf_executions registry; verified + pytest green
-- M3 (Agents service): complete — 6 agents in `Middleware/Agents` (`epaa`), Strands→Bedrock→heuristic LLM, pgvector skill matching, orchestrator persists `agent_runs`/`agent_steps`, FastAPI (`/allocations/run`, `/agent-runs/{id}`, `/reports/{id}`); verified end-to-end offline. (OTel/Jaeger wiring still pending — 3.13.)
-- M4 (Spring Boot microservices): *next*
-- M5+ (Portals → AWS): pending
+- M3 (Agents service): complete — 6 agents in `Middleware/Agents` (`epaa`), Strands→Bedrock→heuristic LLM, pgvector skill matching, orchestrator persists `agent_runs`/`agent_steps`, FastAPI; verified end-to-end offline. (OTel/Jaeger pending — 3.13.)
+- M4 (Spring Boot microservices): complete — all 6 services built (employee/project/allocation/notification/reporting per-service 6-module archetype + api-gateway). employee-service runtime-verified; allocation-service calls the Agents API via RestClient. Remaining wiring (per-service Dockerfiles + Middleware compose + OTel) folds into M6.
+- M5 (Portals: Angular admin + projects): *next* — propose professional palettes first (see memory feedback-ui-design)
+- M6+ (E2E → AWS): pending
 
 If you are a fresh Claude session: **before doing any work, run TaskCreate to recreate the milestone tasks from `DevelopmentPlan.md §5` (M0.5 through M10)**. The previous session's task list does not persist.
 
