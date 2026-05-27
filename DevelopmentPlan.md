@@ -395,12 +395,12 @@ Legend: `[ ]` pending · `[~]` in progress · `[x]` complete · `[-]` deferred
 | 5.9 | Admin: Allocations page (trigger + result view) | [ ] |
 | 5.10 | Admin: **Agent Monitor** — live trace of 6 agents (SSE/WebSocket) | [ ] |
 | 5.11 | Admin: Reports page (paper's 4 metrics + LLM rationale) | [ ] |
-| 5.12 | `Portals/projects-portal` — Angular 18 scaffold | [ ] |
-| 5.13 | Customer: Submit Brief page | [ ] |
-| 5.14 | Customer: My Projects + status | [ ] |
-| 5.15 | Customer: Notifications inbox | [ ] |
+| 5.12 | `Portals/projects-portal` — Angular 18 + PrimeNG (Slate+Indigo). Builds clean. | [x] |
+| 5.13 | Customer: Submit Brief page → POST /api/projects | [x] |
+| 5.14 | Customer: My Projects + status (lazy table) | [x] |
+| 5.15 | Customer: Notifications inbox (lazy table) | [x] |
 | 5.16 | Auth wiring (JWT issued by Spring; Cognito in M7) | [ ] |
-| 5.17 | `DevOps/Local/Portals/docker-compose.yaml` (nginx-served) | [ ] |
+| 5.17 | Per-portal Dockerfiles + `DevOps/Local/Portals/docker-compose.yaml` (nginx) → M6 | [ ] |
 
 ### M6 — End-to-End Local (Category: Integration)
 
