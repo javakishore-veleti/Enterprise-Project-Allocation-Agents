@@ -18,8 +18,13 @@ STORE = "shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#6
 LLM = "rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;"
 SVC = "rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;"
 UI = "rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;"
+ACTOR = "shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#dae8fc;strokeColor=#6c8ebf;"
+CAP = "rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;"
+TRIGGER = "rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;"
+NOTE = "shape=note;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;align=left;"
 TITLE = "text;html=1;fontSize=18;fontStyle=1;align=left;verticalAlign=middle;"
 EDGE = "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#475569;"
+EDGE_AUTO = "edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#d79b00;dashed=1;"
 
 
 def node(nid, label, x, y, w, h, style):
@@ -33,10 +38,12 @@ def diagram(name, nodes, edges):
             f'<mxCell id="{nid}" value="{escape(label)}" style="{style}" vertex="1" parent="1">'
             f'<mxGeometry x="{x}" y="{y}" width="{w}" height="{h}" as="geometry"/></mxCell>'
         )
-    for i, (src, tgt, label) in enumerate(edges):
+    for i, e in enumerate(edges):
+        src, tgt, label = e[0], e[1], e[2]
+        estyle = e[3] if len(e) > 3 else EDGE
         val = escape(label) if label else ""
         cells.append(
-            f'<mxCell id="e{src}_{tgt}_{i}" value="{val}" style="{EDGE}" edge="1" parent="1" '
+            f'<mxCell id="e{src}_{tgt}_{i}" value="{val}" style="{estyle}" edge="1" parent="1" '
             f'source="{src}" target="{tgt}"><mxGeometry relative="1" as="geometry"/></mxCell>'
         )
     body = "".join(cells)
@@ -68,8 +75,11 @@ overall_nodes = [
     node("o_pg", "Postgres + pgvector&lt;br&gt;(shared schema)", 620, 360, 200, 70, STORE),
     node("o_obs", "Observability&lt;br&gt;Jaeger · Prometheus · Grafana · Kibana", 880, 360, 200, 70, INPUT),
     node("o_airflow", "Airflow (LocalExecutor)", 880, 150, 180, 40, INPUT),
+    node("o_mgr", "Project Manager&lt;br&gt;(Admin)", 560, 10, 30, 60, ACTOR),
+    node("o_client", "Customer", 660, 10, 30, 60, ACTOR),
 ]
 overall_edges = [
+    ("o_mgr", "o_admin", "uses"), ("o_client", "o_cust", "uses"),
     ("o_admin", "o_gw", ""), ("o_cust", "o_gw", ""),
     ("o_gw", "o_emp", ""), ("o_gw", "o_prj", ""), ("o_gw", "o_alloc", ""),
     ("o_gw", "o_notif", ""), ("o_gw", "o_rep", ""),
@@ -131,8 +141,75 @@ def agent_tab(name, inputs, agent_label, logic, outputs, extras):
     return diagram(name, nodes, edges)
 
 
-tabs = [diagram("Overall Architecture", overall_nodes, overall_edges),
-        diagram("Agent Pipeline", pipe_nodes, pipe_edges)]
+# ---- Tab: Business Architecture (personas + value stream) ----------------
+biz_nodes = [
+    t("b_title", "Business Architecture (Personas &amp; Value Stream)", 40, 10),
+    # personas (actors)
+    node("b_client", "Customer&lt;br&gt;(submits needs)", 60, 70, 30, 60, ACTOR),
+    node("b_mgr", "Project / Resource&lt;br&gt;Manager", 300, 70, 30, 60, ACTOR),
+    node("b_emp", "Employee /&lt;br&gt;Assignee", 560, 70, 30, 60, ACTOR),
+    node("b_exec", "Executive /&lt;br&gt;Management", 820, 70, 30, 60, ACTOR),
+    node("b_admin", "Platform /&lt;br&gt;Data Admin", 980, 70, 30, 60, ACTOR),
+    # value stream capabilities
+    node("b_c1", "Demand Intake&lt;br&gt;(project brief)", 40, 230, 150, 60, CAP),
+    node("b_c2", "Requirement&lt;br&gt;Understanding (AI)", 220, 230, 150, 60, AGENT),
+    node("b_c3", "Skill &amp; Availability&lt;br&gt;Matching (AI)", 400, 230, 150, 60, AGENT),
+    node("b_c4", "Assignment &amp;&lt;br&gt;Approval", 580, 230, 150, 60, CAP),
+    node("b_c5", "Communication&lt;br&gt;(notify staff)", 760, 230, 150, 60, CAP),
+    node("b_c6", "Reporting &amp;&lt;br&gt;Oversight", 940, 230, 150, 60, CAP),
+    node("b_dm", "Data &amp; Workflow&lt;br&gt;Management", 940, 360, 150, 50, CAP),
+    node("b_note", "Capabilities 2–3 are fully automated by the LLM agents&lt;br&gt;"
+                   "— minimal human intervention (the paper's goal). The manager&lt;br&gt;"
+                   "reviews/approves; staff are notified; management gets reports.",
+         40, 380, 470, 90, NOTE),
+]
+biz_edges = [
+    ("b_client", "b_c1", "submit brief"),
+    ("b_c1", "b_c2", ""), ("b_c2", "b_c3", ""), ("b_c3", "b_c4", ""),
+    ("b_c4", "b_c5", ""), ("b_c5", "b_c6", ""),
+    ("b_mgr", "b_c4", "review / approve"),
+    ("b_emp", "b_c5", "receives"),
+    ("b_exec", "b_c6", "consumes"),
+    ("b_admin", "b_dm", "runs workflows"),
+]
+
+# ---- Tab: Agent Triggers (manual vs automatic) ---------------------------
+trig_nodes = [
+    t("g_title", "Agent Triggers — Manual vs Automatic", 40, 10),
+    node("g_mgr", "Project&lt;br&gt;Manager", 40, 80, 30, 60, ACTOR),
+    node("g_monitor", "Admin Portal: Agent Monitor&lt;br&gt;'Run allocation' (MANUAL)", 150, 75, 240, 55, UI),
+    node("g_alloc", "allocation-service&lt;br&gt;POST /api/allocations/run", 440, 78, 200, 50, SVC),
+    node("g_agents", "Agents pipeline&lt;br&gt;(synchronous, on-demand)", 700, 75, 220, 55, AGENT),
+
+    node("g_admin", "Platform /&lt;br&gt;Data Admin", 40, 230, 30, 60, ACTOR),
+    node("g_dm", "Admin Portal: Data Management&lt;br&gt;'Initiate Execution' (MANUAL)", 150, 225, 240, 55, UI),
+    node("g_dl", "Datalake API&lt;br&gt;POST /synthetic/generate", 440, 228, 200, 50, SVC),
+    node("g_airflow", "Airflow DAG&lt;br&gt;(ASYNC execution)", 700, 228, 200, 50, TRIGGER),
+    node("g_pg", "Postgres + pgvector", 700, 330, 200, 45, STORE),
+
+    node("g_note", "MANUAL: a manager/admin triggers from the portal (or any API client).&lt;br&gt;"
+                   "ASYNC (dashed): the Datalake API returns immediately and the Airflow DAG&lt;br&gt;"
+                   "generates + loads data in the background.&lt;br&gt;"
+                   "The 6-agent allocation runs synchronously per request — no scheduled auto-runs&lt;br&gt;"
+                   "yet (future: event-driven on brief submission).",
+         40, 420, 620, 110, NOTE),
+]
+trig_edges = [
+    ("g_mgr", "g_monitor", "clicks"),
+    ("g_monitor", "g_alloc", ""), ("g_alloc", "g_agents", "triggers"),
+    ("g_agents", "g_pg", "read/write"),
+    ("g_admin", "g_dm", "clicks"),
+    ("g_dm", "g_dl", ""),
+    ("g_dl", "g_airflow", "async trigger", EDGE_AUTO),
+    ("g_airflow", "g_pg", "generate + load", EDGE_AUTO),
+]
+
+tabs = [
+    diagram("Business Architecture", biz_nodes, biz_edges),
+    diagram("Overall Architecture", overall_nodes, overall_edges),
+    diagram("Agent Triggers", trig_nodes, trig_edges),
+    diagram("Agent Pipeline", pipe_nodes, pipe_edges),
+]
 
 tabs.append(agent_tab(
     "Agent 1: Requirement Parsing",

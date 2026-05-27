@@ -6,17 +6,16 @@ extension.
 
 ## Tabs
 
-1. **Overall Architecture** — portals → gateway → microservices → Agents/Datalake → Postgres + observability
-2. **Agent Pipeline** — the orchestrator running the 6 agents in sequence + persisted trace
-3. **Agent 1: Requirement Parsing**
-4. **Agent 2: Skill Matching**
-5. **Agent 3: Availability Checker**
-6. **Agent 4: Assignment**
-7. **Agent 5: Communication**
-8. **Agent 6: Reporting**
+1. **Business Architecture** — personas (Customer, Project/Resource Manager, Employee, Executive, Platform Admin) + the value stream; flags which capabilities the agents fully automate
+2. **Overall Architecture** — portals → gateway → microservices → Agents/Datalake → Postgres + observability (with the Manager/Customer actors)
+3. **Agent Triggers** — how runs start: **manual** (portal Agent Monitor / Data Management) vs **automatic/async** (Airflow DAG — dashed arrows)
+4. **Agent Pipeline** — the orchestrator running the 6 agents in sequence + persisted trace
+5–10. **Agent 1–6** — Requirement Parsing · Skill Matching · Availability Checker · Assignment · Communication · Reporting
 
-Legend: blue = input · indigo = agent · green = output · grey cylinder = data store ·
-amber = LLM provider · purple = Spring service · yellow = Angular portal.
+Legend: stick figure = persona/actor · blue = input · indigo = agent / AI capability ·
+green = output / business capability · grey cylinder = data store · amber = LLM provider
+or async trigger · purple = Spring service · yellow = Angular portal · note = explanation.
+Dashed amber arrows = asynchronous (Airflow) triggers.
 
 ## Regenerate
 
