@@ -25,6 +25,12 @@ dependencies = [
 strands = ["strands-agents>=0.1"]
 langchain = ["langchain-aws>=0.2", "langchain-core>=0.3"]
 openai = ["openai>=1.40"]
+otel = [
+    "opentelemetry-sdk>=1.27",
+    "opentelemetry-exporter-otlp-proto-grpc>=1.27",
+    "opentelemetry-instrumentation-fastapi>=0.48b0",
+    "opentelemetry-instrumentation-sqlalchemy>=0.48b0",
+]
 dev = ["pytest>=8.0", "ruff>=0.6"]
 
 [project.scripts]

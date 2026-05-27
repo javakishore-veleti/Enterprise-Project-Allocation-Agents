@@ -23,6 +23,7 @@ services:
       AIRFLOW_BASE_URL: http://epaa-airflow-webserver:8080
       AIRFLOW_USER: ${AIRFLOW_ADMIN_USER:-admin}
       AIRFLOW_PASSWORD: ${AIRFLOW_ADMIN_PASSWORD:-admin}
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-http://epaa-jaeger:4317}
     ports:
       - "${DATALAKE_API_PORT:-8000}:8000"
     networks:

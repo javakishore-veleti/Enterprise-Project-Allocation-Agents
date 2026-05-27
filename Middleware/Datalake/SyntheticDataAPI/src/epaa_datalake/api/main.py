@@ -10,6 +10,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+from ..observability import setup_tracing
 from ..startup import run_migrations
 from .routes import router
 
@@ -27,4 +28,5 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="EPAA Datalake — SyntheticDataAPI", version="0.1.0", lifespan=lifespan)
+setup_tracing(app, "datalake-api")
 app.include_router(router)

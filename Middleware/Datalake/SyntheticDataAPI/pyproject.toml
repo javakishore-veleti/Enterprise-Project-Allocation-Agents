@@ -20,6 +20,12 @@ dependencies = [
 
 [project.optional-dependencies]
 hf = ["sentence-transformers>=3.0"]
+otel = [
+    "opentelemetry-sdk>=1.27",
+    "opentelemetry-exporter-otlp-proto-grpc>=1.27",
+    "opentelemetry-instrumentation-fastapi>=0.48b0",
+    "opentelemetry-instrumentation-sqlalchemy>=0.48b0",
+]
 dev = ["pytest>=8.0", "ruff>=0.6"]
 
 [project.scripts]

@@ -8,7 +8,7 @@ ENV PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1
 # Shared data layer first (provides the `epaa-datalake` dependency), then agents.
 COPY Datalake/SyntheticDataAPI /app/datalake
 COPY Agents /app/agents
-RUN pip install /app/datalake && pip install /app/agents
+RUN pip install '/app/datalake[otel]' && pip install /app/agents
 
 EXPOSE 8001
 CMD ["uvicorn", "epaa.api.main:app", "--host", "0.0.0.0", "--port", "8001"]
