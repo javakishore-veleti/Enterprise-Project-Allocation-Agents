@@ -1,0 +1,58 @@
+# EPAA API gateway. Service URIs default to localhost (non-docker dev) and are
+# overridden with container hostnames in DevOps/Local/Middleware compose.
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOriginPatterns: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+      routes:
+        - id: employee-service
+          uri: ${EMPLOYEE_SERVICE_URI:http://localhost:8081}
+          predicates:
+            - Path=/api/employees/**
+        - id: project-service
+          uri: ${PROJECT_SERVICE_URI:http://localhost:8082}
+          predicates:
+            - Path=/api/projects/**
+        - id: allocation-service
+          uri: ${ALLOCATION_SERVICE_URI:http://localhost:8083}
+          predicates:
+            - Path=/api/allocations/**
+        - id: notification-service
+          uri: ${NOTIFICATION_SERVICE_URI:http://localhost:8084}
+          predicates:
+            - Path=/api/notifications/**
+        - id: reporting-service
+          uri: ${REPORTING_SERVICE_URI:http://localhost:8085}
+          predicates:
+            - Path=/api/reports/**
+        # Python services (prefix stripped before forwarding)
+        - id: agents
+          uri: ${AGENTS_URI:http://localhost:8001}
+          predicates:
+            - Path=/agents/**
+          filters:
+            - StripPrefix=1
+        - id: datalake
+          uri: ${DATALAKE_URI:http://localhost:8000}
+          predicates:
+            - Path=/datalake/**
+          filters:
+            - StripPrefix=1
+
+server:
+  port: ${API_GATEWAY_PORT:8080}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway,prometheus
