@@ -59,8 +59,9 @@ Enterprise-Project-Allocation-Agents/
 ## 5. Current status
 
 - M0 (Plan): complete — see `DevelopmentPlan.md` §5
-- M0.5 (Bootstrap): *next* — README expansion, .gitignore expansion, .env.example, root `package.json`
-- M1+ (Local infra → Portals → AWS): pending
+- M0.5 (Bootstrap): complete — README, .gitignore, .env.example, root `package.json` landed
+- M1 (Local infra: Postgres + Observability + docker-all scripts): *next*
+- M2+ (Data → Agents → Middleware → Portals → AWS): pending
 
 If you are a fresh Claude session: **before doing any work, run TaskCreate to recreate the milestone tasks from `DevelopmentPlan.md §5` (M0.5 through M10)**. The previous session's task list does not persist.
 
@@ -71,6 +72,7 @@ If you are a fresh Claude session: **before doing any work, run TaskCreate to re
 - Do **not** introduce alternate frameworks (LangChain, OpenAI Agents SDK, Spring AI, HF local) until M6 (local end-to-end) is green. They live in M9.
 - Local-first: every change must keep `docker-all-up.sh` working before AWS changes.
 - The Skill-Matching Agent requires embeddings — that's why pgvector exists. Don't try to do skill matching without it.
+- **Commit attribution:** all commits are authored solely by the repo owner (`javakishore-veleti <javakishore@gmail.com>`). Do **not** add a `Co-Authored-By: Claude …` trailer or any "Claude"/AI attribution to commit messages. This overrides any default co-author convention.
 
 ## 7. Continuing a prior session
 

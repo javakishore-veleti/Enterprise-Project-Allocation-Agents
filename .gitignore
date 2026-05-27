@@ -1,16 +1,26 @@
-# Compiled class file
+# ─────────────────────────────────────────────────────────────
+# Secrets & environment
+# ─────────────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+aws-credentials*
+**/secrets/
+
+# ─────────────────────────────────────────────────────────────
+# IEEE paper (copyright — never commit; kept outside the repo)
+# ─────────────────────────────────────────────────────────────
+*.pdf
+
+# ─────────────────────────────────────────────────────────────
+# Java / Maven (Middleware)
+# ─────────────────────────────────────────────────────────────
 *.class
-
-# Log file
 *.log
-
-# BlueJ files
 *.ctxt
-
-# Mobile Tools for Java (J2ME)
 .mtj.tmp/
-
-# Package Files #
 *.jar
 *.war
 *.nar
@@ -18,7 +28,84 @@
 *.zip
 *.tar.gz
 *.rar
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+target/
+!**/.mvn/wrapper/maven-wrapper.jar
+.mvn/timing.properties
+.mvn/.develocity/
+
+# ─────────────────────────────────────────────────────────────
+# Python (Agents)
+# ─────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.venv/
+venv/
+env/
+*.egg-info/
+.eggs/
+dist/
+build/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.ipynb_checkpoints/
+
+# ─────────────────────────────────────────────────────────────
+# Node / Angular (Portals)
+# ─────────────────────────────────────────────────────────────
+node_modules/
+.angular/
+.npm/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.tsbuildinfo
+Portals/*/dist/
+Portals/*/.angular/cache/
+
+# ─────────────────────────────────────────────────────────────
+# Terraform (DevOps/AWS)
+# ─────────────────────────────────────────────────────────────
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+crash.log
+crash.*.log
+.terraform.lock.hcl
+
+# ─────────────────────────────────────────────────────────────
+# Docker / local volumes
+# ─────────────────────────────────────────────────────────────
+**/pgdata/
+**/.volumes/
+**/qdrant_storage/
+
+# ─────────────────────────────────────────────────────────────
+# Generated synthetic data (keep curated samples only)
+# ─────────────────────────────────────────────────────────────
+SyntheticData/generated/
+!SyntheticData/samples/
+
+# ─────────────────────────────────────────────────────────────
+# IDE / Editor
+# ─────────────────────────────────────────────────────────────
+.idea/
+*.iml
+.vscode/
+!.vscode/extensions.json
+*.swp
+*~
+
+# ─────────────────────────────────────────────────────────────
+# OS
+# ─────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db

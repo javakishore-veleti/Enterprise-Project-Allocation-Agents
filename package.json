@@ -1,0 +1,44 @@
+{
+  "name": "enterprise-project-allocation-agents",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Hands-on implementation of the IEEE paper MCP-AI: a multi-agent LLM architecture for automated enterprise project allocation. Root orchestration for local-first dev.",
+  "license": "Apache-2.0",
+  "author": "javakishore-veleti",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/javakishore-veleti/Enterprise-Project-Allocation-Agents.git"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "npm run start:infra && npm run start:agents && npm run start:middleware && npm run start:portals",
+    "stop": "npm run stop:portals; npm run stop:middleware; npm run stop:agents; npm run stop:infra",
+    "status": "bash DevOps/Local/docker-all-status.sh",
+
+    "start:infra": "bash DevOps/Local/docker-all-up.sh infra",
+    "stop:infra": "bash DevOps/Local/docker-all-down.sh infra",
+
+    "start:postgres": "docker compose -f DevOps/Local/Postgres/docker-compose.yaml up -d",
+    "stop:postgres": "docker compose -f DevOps/Local/Postgres/docker-compose.yaml down",
+
+    "start:observability": "docker compose -f Observability/Prometheus/docker-compose.yaml -f Observability/Grafana/docker-compose.yaml -f Observability/Jaeger/docker-compose.yaml up -d",
+    "stop:observability": "docker compose -f Observability/Prometheus/docker-compose.yaml -f Observability/Grafana/docker-compose.yaml -f Observability/Jaeger/docker-compose.yaml down",
+
+    "start:vectordb": "docker compose -f DevOps/Local/VectorDBs/Qdrant/docker-compose.yaml up -d",
+    "stop:vectordb": "docker compose -f DevOps/Local/VectorDBs/Qdrant/docker-compose.yaml down",
+
+    "start:agents": "docker compose -f DevOps/Local/Agents/docker-compose.yaml up -d",
+    "stop:agents": "docker compose -f DevOps/Local/Agents/docker-compose.yaml down",
+
+    "start:middleware": "docker compose -f DevOps/Local/Middleware/docker-compose.yaml up -d",
+    "stop:middleware": "docker compose -f DevOps/Local/Middleware/docker-compose.yaml down",
+
+    "start:portals": "docker compose -f DevOps/Local/Portals/docker-compose.yaml up -d",
+    "stop:portals": "docker compose -f DevOps/Local/Portals/docker-compose.yaml down",
+
+    "seed": "python -m epaa.synthetic.generator --load",
+    "logs": "bash DevOps/Local/docker-all-status.sh --logs"
+  }
+}

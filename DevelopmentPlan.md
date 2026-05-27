@@ -275,8 +275,8 @@ Legend: `[ ]` pending · `[~]` in progress · `[x]` complete · `[-]` deferred
 | 0.1 | Read paper and lock scope | [x] |
 | 0.2 | Confirm tech stack (Strands+Bedrock, hybrid Python/Java, local-first) | [x] |
 | 0.3 | Write `DevelopmentPlan.md` (this doc) | [x] |
-| 0.4 | User creates the git repo | [ ] |
-| 0.5 | Add `README.md`, `.gitignore`, `.env.example`, root `package.json` | [ ] |
+| 0.4 | User creates the git repo | [x] |
+| 0.5 | Add `README.md`, `.gitignore`, `.env.example`, root `package.json` | [x] |
 
 ### M1 — Local Infrastructure (Category: DevOps/Local)
 
