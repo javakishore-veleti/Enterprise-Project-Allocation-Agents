@@ -64,7 +64,8 @@ Full architecture, folder layout, and the milestone roadmap live in **[Developme
 The agents reason through one swappable `complete()` interface, so the framework is a
 config switch (`LLM_PROVIDER`). Today the multi-agent *orchestration* is a custom
 sequential pipeline; **v2 moves it to LangGraph** (see [Status](#status)). For reference,
-the popular options as of early 2026:
+the popular options as of early 2026 (fuller writeup in
+[docs/agent-frameworks.md](docs/agent-frameworks.md)):
 
 ### Code-first frameworks (Python-centric)
 
@@ -158,7 +159,8 @@ npm run status
 - [docs/agents.md](docs/agents.md) — the 6 agents, scoring, LLM/embedding providers
 - [docs/api-contracts.md](docs/api-contracts.md) — gateway routes + service REST contracts
 - [docs/data-model.md](docs/data-model.md) — Postgres schema & ownership
-- [docs/adapters.md](docs/adapters.md) — pluggable LLM framework adapters
+- [docs/adapters.md](docs/adapters.md) — pluggable LLM backends + orchestrator (custom vs LangGraph)
+- [docs/agent-frameworks.md](docs/agent-frameworks.md) — multi-agent framework landscape & selection guide
 - [docs/datalake-design.md](docs/datalake-design.md) — synthetic-data reality vs. target datalake/vector-KB design
 - [docs/demo.md](docs/demo.md) — run guide & walkthrough
 - [docs/Design/](docs/Design/) — multi-tab draw.io (business + overall + triggers + per-agent diagrams)
