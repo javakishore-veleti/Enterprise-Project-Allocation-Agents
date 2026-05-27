@@ -1,6 +1,8 @@
 """Request/Response DTOs for the Datalake API (one Req/Resp pair per use case)."""
 from __future__ import annotations
 
+import datetime as dt
+
 from pydantic import BaseModel, Field
 
 
@@ -23,3 +25,36 @@ class GenerateResponse(BaseModel):
 class RunStatusResponse(BaseModel):
     dag_run_id: str
     state: str | None = None
+
+
+class WorkflowResponse(BaseModel):
+    id: str
+    name: str
+    description: str | None = None
+    wf_engine: str
+    engine_ref: str | None = None
+    wf_type: str | None = None
+
+
+class WorkflowListResponse(BaseModel):
+    items: list[WorkflowResponse]
+
+
+class ExecutionItem(BaseModel):
+    id: str
+    exec_status: str
+    exec_created_dt: dt.datetime | None = None
+    exec_started_at: dt.datetime | None = None
+    exec_completed_at: dt.datetime | None = None
+    exec_engine: str
+    engine_run_id: str | None = None
+    exec_configs: dict | None = None
+    exec_results: dict | None = None
+
+
+class ExecutionPageResponse(BaseModel):
+    items: list[ExecutionItem]
+    page: int
+    page_size: int
+    total: int
+    pages: int

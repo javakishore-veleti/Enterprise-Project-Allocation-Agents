@@ -163,3 +163,34 @@ class Report(Pk, Base):
     run_id: Mapped[str | None] = mapped_column(ForeignKey(f"{SCHEMA}.agent_runs.id", ondelete="SET NULL"), nullable=True)
     summary_text: Mapped[str] = mapped_column(Text)
     metrics: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+
+
+# --- Workflow registry & execution history (backs the admin Data Management UI) ---
+
+class WfDef(Pk, Base):
+    """A registered workflow (e.g. an Airflow DAG). Powers the per-type
+    workflow dropdown in the admin portal."""
+
+    __tablename__ = "wf_def"
+    name: Mapped[str] = mapped_column(String(150), index=True)
+    description: Mapped[str | None] = mapped_column(String(300), nullable=True)
+    status: Mapped[str] = mapped_column(String(40), default="active", index=True)  # active|inactive
+    wf_engine: Mapped[str] = mapped_column(String(60), default="Apache Airflow")
+    # the engine's identifier for this workflow (e.g. Airflow dag_id) + a type tag
+    engine_ref: Mapped[str | None] = mapped_column(String(150), index=True, nullable=True)
+    wf_type: Mapped[str | None] = mapped_column(String(80), index=True, nullable=True)  # e.g. "synthetic-data"
+
+
+class WfExecution(Pk, Base):
+    """A single execution of a WfDef. Powers the History (paginated) view."""
+
+    __tablename__ = "wf_executions"
+    wf_def_id: Mapped[str] = mapped_column(ForeignKey(f"{SCHEMA}.wf_def.id", ondelete="CASCADE"), index=True)
+    exec_created_dt: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), default=_now, index=True)
+    exec_status: Mapped[str] = mapped_column(String(40), default="created", index=True)  # created|running|success|failed
+    exec_started_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)  # when engine was invoked
+    exec_completed_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    exec_configs: Mapped[dict | None] = mapped_column(JSON, nullable=True)  # parameters / DAG conf
+    exec_engine: Mapped[str] = mapped_column(String(60), default="Apache Airflow")
+    exec_results: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    engine_run_id: Mapped[str | None] = mapped_column(String(200), index=True, nullable=True)  # e.g. Airflow dag_run_id

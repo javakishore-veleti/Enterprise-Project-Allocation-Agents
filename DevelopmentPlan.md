@@ -312,8 +312,9 @@ Legend: `[ ]` pending · `[~]` in progress · `[x]` complete · `[-]` deferred
 | 2.6 | `DAGS/SyntheticDataGen` Airflow DAG: migrate → generate → embed → load into Postgres | [x] |
 | 2.7 | `SyntheticDataAPI` FastAPI: `POST /synthetic/generate` (async DAG + sync inline) + `GET /runs/{id}` | [x] |
 | 2.8 | Verified end-to-end: migrations + generate loaded 12 tables; pytest 4/4 green | [x] |
-| 2.9 | Curated sample fixtures committed under `SyntheticDataAPI/samples/` | [ ] |
-| 2.10 | Run the DAG inside the Airflow container (validate `_PIP_ADDITIONAL_REQUIREMENTS` + DAG import) | [ ] |
+| 2.9 | Workflow registry: `wf_def` + `wf_executions` tables (delta migration 0002, conditional) + registry/history API — records DAG triggers; paginated 15/page searchable history. Backs admin Data Management. Verified. | [x] |
+| 2.10 | Curated sample fixtures committed under `SyntheticDataAPI/samples/` | [ ] |
+| 2.11 | Run the DAG inside the Airflow container (validate `_PIP_ADDITIONAL_REQUIREMENTS` + DAG import) | [ ] |
 
 ### M3 — Agents Layer (Category: AI / Agents)
 
