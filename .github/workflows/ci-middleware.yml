@@ -1,16 +1,8 @@
 name: ci-middleware
 
+# Manual-only — run from the Actions tab (no automatic push/PR triggers).
 on:
-  push:
-    branches: [main]
-    paths:
-      - "Middleware/*-service/**"
-      - "Middleware/api-gateway/**"
-      - ".github/workflows/ci-middleware.yml"
-  pull_request:
-    paths:
-      - "Middleware/*-service/**"
-      - "Middleware/api-gateway/**"
+  workflow_dispatch:
 
 jobs:
   build:

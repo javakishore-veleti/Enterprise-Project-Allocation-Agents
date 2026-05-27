@@ -97,6 +97,7 @@ If you are a fresh Claude session: **before doing any work, run TaskCreate to re
 - Local-first: every change must keep `docker-all-up.sh` working before AWS changes.
 - The Skill-Matching Agent requires embeddings — that's why pgvector exists. Don't try to do skill matching without it.
 - **Commit attribution:** all commits are authored solely by the repo owner (`javakishore-veleti <javakishore@gmail.com>`). Do **not** add a `Co-Authored-By: Claude …` trailer or any "Claude"/AI attribution to commit messages. This overrides any default co-author convention.
+- **Workflows are manual-only:** every `.github/workflows/*.yml` uses `on: workflow_dispatch:` (or `workflow_call` for reusables). Do **not** add `push`/`pull_request` triggers — the owner runs all workflows (incl. CI) by hand.
 
 ## 7. Engineering conventions (MANDATORY for M2–M4)
 

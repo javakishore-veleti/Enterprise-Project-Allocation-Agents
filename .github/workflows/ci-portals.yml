@@ -1,14 +1,8 @@
 name: ci-portals
 
+# Manual-only — run from the Actions tab (no automatic push/PR triggers).
 on:
-  push:
-    branches: [main]
-    paths:
-      - "Portals/**"
-      - ".github/workflows/ci-portals.yml"
-  pull_request:
-    paths:
-      - "Portals/**"
+  workflow_dispatch:
 
 jobs:
   build:
