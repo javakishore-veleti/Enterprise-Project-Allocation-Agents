@@ -7,15 +7,17 @@ extension.
 ## Tabs
 
 1. **Business Architecture** — personas (Customer, Project/Resource Manager, Employee, Executive, Platform Admin) + the value stream; flags which capabilities the agents fully automate
-2. **Overall Architecture** — portals → gateway → microservices → Agents/Datalake → Postgres + observability (with the Manager/Customer actors)
-3. **Agent Triggers** — how runs start: **manual** (portal Agent Monitor / Data Management) vs **automatic/async** (Airflow DAG — dashed arrows)
-4. **Agent Pipeline** — the orchestrator running the 6 agents in sequence + persisted trace
-5–10. **Agent 1–6** — Requirement Parsing · Skill Matching · Availability Checker · Assignment · Communication · Reporting
+2. **Overall Architecture** — portals → gateway → microservices → Synthetic Data Service → Postgres + observability (with the Manager/Customer actors)
+3. **Agent Triggers** — how the **allocation pipeline** is triggered (manual via Agent Monitor / any API client; synchronous, on-demand)
+4. **Data Generation Workflows** — synthetic-data generation (data tooling, **not** an agent): Data Management → Airflow DAG (async) → pgvector
+5. **Datalake & Vector KB (Target)** — proposed future design (object storage, initial/daily/incremental ingestion, Airflow-managed) — see [../datalake-design.md](../datalake-design.md)
+6. **Agent Pipeline** — the orchestrator running the 6 agents in sequence + persisted trace
+7–12. **Agent 1–6** — Requirement Parsing · Skill Matching · Availability Checker · Assignment · Communication · Reporting
 
 Legend: stick figure = persona/actor · blue = input · indigo = agent / AI capability ·
 green = output / business capability · grey cylinder = data store · amber = LLM provider
-or async trigger · purple = Spring service · yellow = Angular portal · note = explanation.
-Dashed amber arrows = asynchronous (Airflow) triggers.
+or async trigger · purple = Spring service · yellow = Angular portal · dashed grey = future
+(not built) · note = explanation. Dashed amber arrows = asynchronous (Airflow) triggers.
 
 ## Regenerate
 

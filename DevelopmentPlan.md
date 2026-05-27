@@ -479,6 +479,22 @@ Legend: `[ ]` pending · `[~]` in progress · `[x]` complete · `[-]` deferred
 | 10.4 | `docs/demo.md` — smoke test + full-stack run guide + walkthrough | [x] |
 | 10.5 | `docs/data-model.md` — schema tables, relationships, ownership | [x] |
 | 10.6 | Screenshots / GIF in README (needs a running UI capture) | [ ] |
+| 10.7 | `docs/datalake-design.md` + draw.io tabs (Business Architecture, Agent Triggers split, Target Datalake) | [x] |
+
+### M11 — Real Datalake & Vector Knowledge Base (proposed — design only)
+
+> Today's "Datalake" is a **Synthetic Data Service** (generate → embed → pgvector; no object
+> store, no external KB, no incremental). This milestone turns it into a real knowledge base.
+> Full design: [docs/datalake-design.md](docs/datalake-design.md).
+
+| # | Task | Status |
+|---|------|--------|
+| 11.1 | Object-storage datalake (S3 / MinIO) — raw + curated zones | [ ] |
+| 11.2 | Source connectors: HRIS, CVs/résumés, project docs, skills catalog | [ ] |
+| 11.3 | Airflow ingestion DAGs: **initial** backfill · **daily** batch · **incremental** (CDC/event) | [ ] |
+| 11.4 | Embedding pipeline (Titan / HF) → upsert into vector DB (pgvector or Qdrant via `VECTOR_BACKEND`) | [ ] |
+| 11.5 | Admin portal initiates initial / incremental builds; daily on Airflow schedule | [ ] |
+| 11.6 | Skill-Matching Agent retrieves over the real embedded KB (not synthetic data) | [ ] |
 
 ---
 

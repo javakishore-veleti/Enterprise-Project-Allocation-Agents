@@ -107,8 +107,9 @@ npm run status
 - [docs/api-contracts.md](docs/api-contracts.md) — gateway routes + service REST contracts
 - [docs/data-model.md](docs/data-model.md) — Postgres schema & ownership
 - [docs/adapters.md](docs/adapters.md) — pluggable LLM framework adapters
+- [docs/datalake-design.md](docs/datalake-design.md) — synthetic-data reality vs. target datalake/vector-KB design
 - [docs/demo.md](docs/demo.md) — run guide & walkthrough
-- [docs/Design/](docs/Design/) — multi-tab draw.io (overall + per-agent diagrams)
+- [docs/Design/](docs/Design/) — multi-tab draw.io (business + overall + triggers + per-agent diagrams)
 - [DevelopmentPlan.md](DevelopmentPlan.md) — full milestone plan & status
 
 ## Status
