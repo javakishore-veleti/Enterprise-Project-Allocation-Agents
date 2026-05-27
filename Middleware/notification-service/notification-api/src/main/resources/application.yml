@@ -1,0 +1,29 @@
+# notification-service — H2 by default; optional secrets import for Postgres.
+spring:
+  application:
+    name: notification-service
+  config:
+    import: "optional:classpath:application-local-secrets.yaml"
+  datasource:
+    url: jdbc:h2:mem:epaa_notification;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+server:
+  port: ${NOTIFICATION_SERVICE_PORT:8084}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
