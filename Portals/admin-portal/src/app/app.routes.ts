@@ -24,6 +24,31 @@ export const routes: Routes = [
       import('./features/administration/administration.component').then(
         (m) => m.AdministrationComponent,
       ),
+    children: [
+      { path: '', pathMatch: 'full', redirectTo: 'employees' },
+      {
+        path: 'employees',
+        loadComponent: () =>
+          import('./features/administration/employees.component').then((m) => m.EmployeesComponent),
+      },
+      {
+        path: 'projects',
+        loadComponent: () =>
+          import('./features/administration/projects.component').then((m) => m.ProjectsComponent),
+      },
+      {
+        path: 'agent-monitor',
+        loadComponent: () =>
+          import('./features/administration/agent-monitor.component').then(
+            (m) => m.AgentMonitorComponent,
+          ),
+      },
+      {
+        path: 'reports',
+        loadComponent: () =>
+          import('./features/administration/reports.component').then((m) => m.ReportsComponent),
+      },
+    ],
   },
   { path: '**', redirectTo: 'dashboard' },
 ];
