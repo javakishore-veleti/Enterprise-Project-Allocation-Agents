@@ -106,7 +106,9 @@ npm run status
 - [docs/agents.md](docs/agents.md) — the 6 agents, scoring, LLM/embedding providers
 - [docs/api-contracts.md](docs/api-contracts.md) — gateway routes + service REST contracts
 - [docs/data-model.md](docs/data-model.md) — Postgres schema & ownership
+- [docs/adapters.md](docs/adapters.md) — pluggable LLM framework adapters
 - [docs/demo.md](docs/demo.md) — run guide & walkthrough
+- [docs/Design/](docs/Design/) — multi-tab draw.io (overall + per-agent diagrams)
 - [DevelopmentPlan.md](DevelopmentPlan.md) — full milestone plan & status
 
 ## Status
