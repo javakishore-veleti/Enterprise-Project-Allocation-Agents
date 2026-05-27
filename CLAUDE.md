@@ -80,12 +80,14 @@ Enterprise-Project-Allocation-Agents/
 - M2 (Data layer + Datalake): complete — Alembic schema (UUID-string PKs, pgvector), generators, SyntheticDataAPI + DAG, wf_def/wf_executions registry; verified + pytest green
 - M3 (Agents service): complete — 6 agents in `Middleware/Agents` (`epaa`), Strands→Bedrock→heuristic LLM, pgvector skill matching, orchestrator persists `agent_runs`/`agent_steps`, FastAPI; verified end-to-end offline. (OTel/Jaeger pending — 3.13.)
 - M4 (Spring Boot microservices): complete — all 6 services built (employee/project/allocation/notification/reporting per-service 6-module archetype + api-gateway). employee-service runtime-verified; allocation-service calls the Agents API via RestClient. Remaining wiring (per-service Dockerfiles + Middleware compose + OTel) folds into M6.
-- M5 (Portals): both Angular 18 + PrimeNG portals (Slate+Indigo) build; admin Data Management flow + customer Submit/Projects/Notifications done. Remaining: admin Employees/Projects CRUD, Agent Monitor, Reports, auth.
+- M5 (Portals): both Angular 18 + PrimeNG portals (Slate+Indigo) build. Admin: Data Management flow + Employees CRUD / Projects / Agent Monitor / Reports. Customer: Submit/Projects/Notifications. Remaining: auth (Cognito/JWT).
 - M6 (E2E): Dockerfiles (6 services + 2 portals) + Middleware/Portals composes; **containerized core E2E verified** (Datalake seeds Postgres → Agents 6-agent pipeline over HTTP → allocations + report via `DevOps/Local/smoke-test.sh`). Shared-Postgres schema reconciled (`reports.metrics_json`). Open: OTel/Grafana dashboards, full 11-container bring-up, seed idempotency.
 - M7 (AWS): complete — 7 Terraform modules (vpc/bedrock/rds/sagemaker/ecs/cognito/cloudfront) + dev env (validate+fmt clean); reusable workflow + 14 numbered Deploy/Destroy callers (**manual-only `workflow_dispatch`**; auth via **AWS keys in GitHub Secrets** `AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY`). Apply needs those + bootstrap (state bucket, lock table). ECS per-app task defs + real apply still open.
 - M8 (CI): complete — ci-agents (ruff+pytest), ci-middleware (6-service mvn matrix), ci-portals (ng build matrix); all three **green on GitHub Actions**.
-- M9 (alt frameworks: LangChain/OpenAI/Spring AI/HF/SageMaker adapters) — deferred learning track
-- M10 (docs/demo): complete — `docs/{architecture,agents,api-contracts,data-model,demo}.md` + README docs index. Open: UI screenshots/GIF.
+- M9 (alt frameworks): complete — pluggable LLM backends (strands/bedrock/langchain/openai/ollama/heuristic) via `LLM_PROVIDER` + `docs/adapters.md`; Spring AI + SageMaker documented as alternate paths.
+- M10 (docs/demo): complete — `docs/{architecture,agents,api-contracts,data-model,adapters,demo}.md` + README index.
+- Open items done: seed idempotency, sample fixtures, Grafana metrics dashboard, OTel (Python), admin pages, ECS task defs.
+- **Genuinely blocked here (need AWS creds / browser):** real `terraform apply` (7.17), live SageMaker endpoint (9.5), UI screenshots (10.6). Also remaining: auth (Cognito/JWT), Spring OTel, in-container Airflow DAG run.
 
 If you are a fresh Claude session: **before doing any work, run TaskCreate to recreate the milestone tasks from `DevelopmentPlan.md §5` (M0.5 through M10)**. The previous session's task list does not persist.
 
