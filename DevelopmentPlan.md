@@ -421,21 +421,27 @@ Legend: `[ ]` pending · `[~]` in progress · `[x]` complete · `[-]` deferred
 
 | # | Task | Status |
 |---|------|--------|
-| 7.1 | Terraform module: `vpc` | [ ] |
-| 7.2 | Terraform module: `bedrock` (model invocation IAM + Bedrock model access requests) | [ ] |
-| 7.3 | Terraform module: `rds` (Postgres + pgvector parameter group) | [ ] |
-| 7.4 | Terraform module: `sagemaker` (Studio + optional endpoint for HF model) | [ ] |
-| 7.5 | Terraform module: `ecs` (Fargate cluster + services for Agents + Middleware) | [ ] |
-| 7.6 | Terraform module: `cognito` (user pools for admin + customer) | [ ] |
-| 7.7 | Terraform module: `cloudfront` (S3-hosted Angular bundles) | [ ] |
-| 7.8 | `.github/workflows/001-AWS-Deploy-VPC.yml` + `001-AWS-Destroy-VPC.yml` | [ ] |
-| 7.9 | `002-AWS-Deploy-Bedrock.yml` + Destroy | [ ] |
-| 7.10 | `003-AWS-Deploy-RDS.yml` + Destroy | [ ] |
-| 7.11 | `004-AWS-Deploy-SageMaker.yml` + Destroy | [ ] |
-| 7.12 | `005-AWS-Deploy-ECS.yml` + Destroy | [ ] |
-| 7.13 | `006-AWS-Deploy-Cognito.yml` + Destroy | [ ] |
-| 7.14 | `007-AWS-Deploy-CloudFront.yml` + Destroy | [ ] |
-| 7.15 | OIDC trust between GitHub Actions and AWS (no static keys) | [ ] |
+> All modules `terraform validate` + `fmt` clean; all 15 workflow YAMLs lint clean. Apply requires AWS
+> creds + the bootstrap (state bucket, lock table, OIDC role) — see DevOps/AWS/Terraform/README.md.
+
+| # | Task | Status |
+| 7.1 | Terraform module: `vpc` (subnets, IGW, NAT, routes) | [x] |
+| 7.2 | Terraform module: `bedrock` (model invocation IAM policy) | [x] |
+| 7.3 | Terraform module: `rds` (Postgres + SG + subnet group) | [x] |
+| 7.4 | Terraform module: `sagemaker` (Studio domain + exec role) | [x] |
+| 7.5 | Terraform module: `ecs` (Fargate cluster + exec/task roles + logs) | [x] |
+| 7.6 | Terraform module: `cognito` (user pool + app client) | [x] |
+| 7.7 | Terraform module: `cloudfront` (private S3 + CloudFront OAC, per portal) | [x] |
+| 7.8 | `001-AWS-Deploy-VPC.yml` + `001-AWS-Destroy-VPC.yml` | [x] |
+| 7.9 | `002-AWS-Deploy-Bedrock.yml` + Destroy | [x] |
+| 7.10 | `003-AWS-Deploy-RDS.yml` + Destroy | [x] |
+| 7.11 | `004-AWS-Deploy-SageMaker.yml` + Destroy | [x] |
+| 7.12 | `005-AWS-Deploy-ECS.yml` + Destroy | [x] |
+| 7.13 | `006-AWS-Deploy-Cognito.yml` + Destroy | [x] |
+| 7.14 | `007-AWS-Deploy-CloudFront.yml` + Destroy | [x] |
+| 7.15 | OIDC trust + reusable `aws-terraform.yml` (no static keys); secrets documented | [x] |
+| 7.16 | ECS task definitions/services per app (agents, datalake, 6 Spring) on the cluster | [ ] |
+| 7.17 | Apply to a real AWS account (needs creds + bootstrap) | [ ] |
 
 ### M8 — CI / Quality (Category: CI/CD)
 
