@@ -447,9 +447,9 @@ Legend: `[ ]` pending · `[~]` in progress · `[x]` complete · `[-]` deferred
 
 | # | Task | Status |
 |---|------|--------|
-| 8.1 | `ci-agents.yml` — ruff + pytest + coverage | [ ] |
-| 8.2 | `ci-middleware.yml` — mvn verify (per-service matrix) | [ ] |
-| 8.3 | `ci-portals.yml` — ng build + ng test (matrix admin/customer) | [ ] |
+| 8.1 | `ci-agents.yml` — ruff + pytest. **Green on GitHub.** | [x] |
+| 8.2 | `ci-middleware.yml` — mvn package (6-service matrix). **Green on GitHub.** | [x] |
+| 8.3 | `ci-portals.yml` — npm ci + ng build (admin/projects matrix). **Green on GitHub.** | [x] |
 | 8.4 | Dependabot / Renovate | [-] |
 | 8.5 | Security scan (Snyk or `gh codeql`) | [-] |
 
