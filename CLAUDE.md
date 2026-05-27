@@ -82,8 +82,9 @@ Enterprise-Project-Allocation-Agents/
 - M4 (Spring Boot microservices): complete — all 6 services built (employee/project/allocation/notification/reporting per-service 6-module archetype + api-gateway). employee-service runtime-verified; allocation-service calls the Agents API via RestClient. Remaining wiring (per-service Dockerfiles + Middleware compose + OTel) folds into M6.
 - M5 (Portals): both Angular 18 + PrimeNG portals (Slate+Indigo) build; admin Data Management flow + customer Submit/Projects/Notifications done. Remaining: admin Employees/Projects CRUD, Agent Monitor, Reports, auth.
 - M6 (E2E): Dockerfiles (6 services + 2 portals) + Middleware/Portals composes; **containerized core E2E verified** (Datalake seeds Postgres → Agents 6-agent pipeline over HTTP → allocations + report via `DevOps/Local/smoke-test.sh`). Shared-Postgres schema reconciled (`reports.metrics_json`). Open: OTel/Grafana dashboards, full 11-container bring-up, seed idempotency.
-- M7 (AWS Terraform + GH Actions deploy/destroy): *next*
-- M8+ (CI → alt frameworks → docs): pending
+- M7 (AWS): complete — 7 Terraform modules (vpc/bedrock/rds/sagemaker/ecs/cognito/cloudfront) + dev env (validate+fmt clean); reusable OIDC workflow + 14 numbered Deploy/Destroy callers (YAML lint clean). Apply needs AWS creds + bootstrap (state bucket, lock table, OIDC role). ECS per-app task defs + real apply still open.
+- M8 (CI: ci-agents / ci-middleware / ci-portals): *next*
+- M9 (alt frameworks) · M10 (docs/demo): pending
 
 If you are a fresh Claude session: **before doing any work, run TaskCreate to recreate the milestone tasks from `DevelopmentPlan.md §5` (M0.5 through M10)**. The previous session's task list does not persist.
 
