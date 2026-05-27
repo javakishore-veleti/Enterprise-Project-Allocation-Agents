@@ -8,6 +8,18 @@ Free-text project briefs go in; an LLM-driven team of six autonomous agents pars
 
 ---
 
+## Table of contents
+
+- [The six agents](#the-six-agents)
+- [Architecture at a glance](#architecture-at-a-glance)
+- [Tech stack](#tech-stack)
+- [Multi-agent orchestration frameworks](#multi-agent-orchestration-frameworks)
+- [Repository layout](#repository-layout)
+- [Quick start (local)](#quick-start-local)
+- [Documentation](#documentation)
+- [Status](#status)
+- [License](#license)
+
 ## The six agents
 
 | # | Agent | Responsibility |
@@ -46,6 +58,46 @@ Full architecture, folder layout, and the milestone roadmap live in **[Developme
 | Observability | Prometheus · Grafana · Jaeger · OpenTelemetry |
 | Local orchestration | Docker Compose + shell scripts + root `package.json` |
 | Cloud (later) | Terraform + GitHub Actions (VPC, Bedrock, RDS, SageMaker, ECS, Cognito, CloudFront) |
+
+## Multi-agent orchestration frameworks
+
+The agents reason through one swappable `complete()` interface, so the framework is a
+config switch (`LLM_PROVIDER`). Today the multi-agent *orchestration* is a custom
+sequential pipeline; **v2 moves it to LangGraph** (see [Status](#status)). For reference,
+the popular options as of early 2026:
+
+### Code-first frameworks (Python-centric)
+
+| Framework | Owner | Orchestration model | Best for |
+|-----------|-------|---------------------|----------|
+| **LangGraph** | LangChain | Stateful graph (nodes/edges, cycles, checkpointing) | Complex, controllable multi-agent flows; durable state |
+| **CrewAI** | CrewAI | Role-based "crews" + tasks | Quick role-playing agent teams; opinionated |
+| **OpenAI Agents SDK** | OpenAI | Lightweight handoffs + guardrails | OpenAI-model apps; simple, production-minded |
+| **Microsoft Agent Framework** | Microsoft | AutoGen group-chat + Semantic Kernel | Enterprise .NET/Python |
+| **Strands Agents** | AWS | Model-driven agent loop + tools | AWS/Bedrock-native, lightweight (this repo's default) |
+| **Google ADK** | Google | Hierarchical agents + A2A | Gemini/Vertex; multi-agent services |
+| **LlamaIndex Workflows** | LlamaIndex | Event-driven workflows | RAG-heavy agent apps |
+| **Pydantic AI** | Pydantic | Type-safe agents + graphs | Strongly-typed, testable agents |
+| **Haystack** | deepset | Pipelines + agents | RAG + production search |
+| **Agno**, **Atomic Agents** | community | Lightweight agent teams | Minimal prototyping |
+
+### Managed / platform offerings
+
+- **Amazon Bedrock Agents** (+ multi-agent collaboration) — AWS managed
+- **Vertex AI Agent Builder / Agent Engine** — Google managed
+- **Azure AI Foundry Agent Service** — Microsoft managed
+- **LangGraph Platform** (LangSmith) — hosting/observability for LangGraph
+
+### Cross-cutting protocols (interop, not orchestrators)
+
+- **MCP (Model Context Protocol)** — Anthropic; standardizes tools/context
+- **A2A (Agent2Agent)** — Google-led; agent-to-agent communication across frameworks
+
+### How this maps to this project
+
+- **Default**: Strands Agents on Bedrock (designated), with **LangChain**, **OpenAI SDK**, and **Ollama/HF** wired as swappable LLM backends (`docs/adapters.md`).
+- **Orchestration today**: a hand-rolled sequential pipeline + custom trace persistence.
+- **v2 (in progress)**: a **LangGraph** orchestrator (graph + shared state + conditional routing), selected by an `ORCHESTRATOR` env var, running side-by-side with v1.
 
 ## Repository layout
 
