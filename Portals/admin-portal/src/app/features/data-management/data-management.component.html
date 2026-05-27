@@ -1,0 +1,144 @@
+<div class="dm">
+  <!-- Left nav: Synthetic Data → types -->
+  <aside class="dm-nav">
+    <div class="dm-nav-group">
+      <div class="dm-nav-head"><i class="pi pi-database"></i> Synthetic Data</div>
+      <ul>
+        @for (t of types; track t.key) {
+          <li>
+            <button
+              [class.active]="selectedType?.key === t.key"
+              (click)="selectType(t)"
+            >
+              {{ t.label }}
+            </button>
+          </li>
+        }
+      </ul>
+    </div>
+  </aside>
+
+  <!-- Right panel -->
+  <section class="dm-main">
+    @if (!selectedType) {
+      <div class="empty">Select a synthetic-data type to view its workflows.</div>
+    } @else {
+      <h1 class="page-title">{{ selectedType.label }}</h1>
+      <p class="page-subtitle">Apache Airflow workflows for this data type.</p>
+
+      <div class="card">
+        <label class="field-label">Workflow</label>
+        <p-select
+          [options]="workflows"
+          optionLabel="name"
+          [(ngModel)]="selectedWorkflow"
+          [filter]="true"
+          filterBy="name,description"
+          placeholder="Search and select a workflow"
+          [showClear]="true"
+          (onChange)="onWorkflowChange()"
+          styleClass="dm-select"
+        >
+          <ng-template let-wf pTemplate="item">
+            <div class="wf-opt">
+              <strong>{{ wf.name }}</strong>
+              <small>{{ wf.engine_ref }} · {{ wf.wf_engine }}</small>
+            </div>
+          </ng-template>
+        </p-select>
+      </div>
+
+      @if (error) {
+        <div class="banner error">{{ error }}</div>
+      }
+
+      @if (selectedWorkflow) {
+        <div class="seg">
+          <button [class.active]="mode === 'initiate'" (click)="setMode('initiate')">
+            <i class="pi pi-play"></i> Initiate Execution
+          </button>
+          <button [class.active]="mode === 'history'" (click)="setMode('history')">
+            <i class="pi pi-history"></i> History
+          </button>
+        </div>
+
+        @if (mode === 'initiate') {
+          <div class="card form">
+            <div class="form-grid">
+              <label>Employees
+                <input type="number" pInputText [(ngModel)]="criteria.num_employees" min="1" max="500" />
+              </label>
+              <label>Projects
+                <input type="number" pInputText [(ngModel)]="criteria.num_projects" min="1" max="200" />
+              </label>
+              <label>Seed
+                <input type="number" pInputText [(ngModel)]="criteria.seed" />
+              </label>
+              <label class="check">
+                <input type="checkbox" [(ngModel)]="criteria.use_llm" /> Use LLM (Bedrock) for text
+              </label>
+              <label class="check">
+                <input type="checkbox" [(ngModel)]="criteria.run_async" /> Run async (Airflow)
+              </label>
+            </div>
+            <p-button label="Run workflow" icon="pi pi-play" [loading]="submitting" (onClick)="runGenerate()" />
+            @if (generateResult) {
+              <div class="banner ok">{{ generateResult }}</div>
+            }
+          </div>
+        }
+
+        @if (mode === 'history') {
+          <div class="card">
+            <div class="history-toolbar">
+              <span class="p-input-icon-left">
+                <input
+                  pInputText
+                  type="text"
+                  [(ngModel)]="search"
+                  (keyup.enter)="onSearch()"
+                  placeholder="Search status or run id…"
+                />
+              </span>
+              <p-button label="Search" icon="pi pi-search" severity="secondary" (onClick)="onSearch()" />
+            </div>
+
+            <p-table
+              [value]="executions"
+              [lazy]="true"
+              (onLazyLoad)="loadExecutions($event)"
+              [paginator]="true"
+              [rows]="PAGE_SIZE"
+              [totalRecords]="total"
+              [loading]="loading"
+              [showCurrentPageReport]="true"
+              currentPageReportTemplate="{first}–{last} of {totalRecords}"
+            >
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Created</th>
+                  <th>Status</th>
+                  <th>Engine</th>
+                  <th>Run ID</th>
+                  <th>Config</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-ex>
+                <tr>
+                  <td>{{ ex.exec_created_dt | date: 'short' }}</td>
+                  <td><span class="chip" [class]="ex.exec_status">{{ ex.exec_status }}</span></td>
+                  <td>{{ ex.exec_engine }}</td>
+                  <td class="mono">{{ ex.engine_run_id }}</td>
+                  <td class="mono small">{{ ex.exec_configs | json }}</td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr><td colspan="5" class="empty">No executions yet.</td></tr>
+              </ng-template>
+            </p-table>
+          </div>
+        }
+      }
+    }
+  </section>
+</div>

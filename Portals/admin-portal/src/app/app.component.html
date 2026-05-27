@@ -1,0 +1,17 @@
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark">EPAA</span>
+    <span class="brand-sub">Enterprise Project Allocation</span>
+  </div>
+  <nav class="topnav">
+    @for (item of nav; track item.path) {
+      <a [routerLink]="item.path" routerLinkActive="active">{{ item.label }}</a>
+    }
+  </nav>
+  <div class="spacer"></div>
+  <div class="user" title="Account"><i class="pi pi-user"></i></div>
+</header>
+
+<main class="content">
+  <router-outlet />
+</main>

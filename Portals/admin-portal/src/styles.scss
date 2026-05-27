@@ -1,0 +1,46 @@
+/* Global styles — Slate + Indigo */
+@import 'primeicons/primeicons.css';
+
+:root {
+  --epaa-indigo: #4f46e5;
+  --epaa-indigo-50: #eef2ff;
+  --epaa-slate-900: #0f172a;
+  --epaa-slate-800: #1e293b;
+  --epaa-slate-600: #475569;
+  --epaa-slate-100: #f1f5f9;
+  --epaa-slate-50: #f8fafc;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  color: var(--epaa-slate-900);
+  background: var(--epaa-slate-100);
+}
+
+.page-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--epaa-slate-900);
+  margin: 0 0 0.25rem;
+}
+
+.page-subtitle {
+  color: var(--epaa-slate-600);
+  margin: 0 0 1.25rem;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+  padding: 1.25rem;
+}
