@@ -77,9 +77,10 @@ Enterprise-Project-Allocation-Agents/
 - M0 (Plan): complete — see `DevelopmentPlan.md` §5
 - M0.5 (Bootstrap): complete
 - M1 (Local infra: Postgres + Observability + Airflow + docker-all scripts): complete
-- M2 (Data layer + Datalake): complete — Alembic schema (UUID-string PKs, pgvector), generators (taxonomy/Faker/hybrid-text/embeddings), SyntheticDataAPI + SyntheticDataGen DAG; verified end-to-end + pytest green
-- M3 (Agents service: 6 Strands agents + FastAPI): *next*
-- M4+ (Middleware → Portals → AWS): pending
+- M2 (Data layer + Datalake): complete — Alembic schema (UUID-string PKs, pgvector), generators, SyntheticDataAPI + DAG, wf_def/wf_executions registry; verified + pytest green
+- M3 (Agents service): complete — 6 agents in `Middleware/Agents` (`epaa`), Strands→Bedrock→heuristic LLM, pgvector skill matching, orchestrator persists `agent_runs`/`agent_steps`, FastAPI (`/allocations/run`, `/agent-runs/{id}`, `/reports/{id}`); verified end-to-end offline. (OTel/Jaeger wiring still pending — 3.13.)
+- M4 (Spring Boot microservices): *next*
+- M5+ (Portals → AWS): pending
 
 If you are a fresh Claude session: **before doing any work, run TaskCreate to recreate the milestone tasks from `DevelopmentPlan.md §5` (M0.5 through M10)**. The previous session's task list does not persist.
 

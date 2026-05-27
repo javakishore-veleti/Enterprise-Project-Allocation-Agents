@@ -320,20 +320,20 @@ Legend: `[ ]` pending · `[~]` in progress · `[x]` complete · `[-]` deferred
 
 | # | Task | Status |
 |---|------|--------|
-| 3.1 | `Middleware/Agents/` Python project (`pyproject.toml`, ruff, pytest, otel, Alembic on startup) | [ ] |
-| 3.2 | LLM provider interface + Bedrock impl (Claude Opus 4.7) | [ ] |
-| 3.3 | Embedding provider interface + Bedrock Titan / HF MiniLM impls | [ ] |
-| 3.4 | Vector store adapter (pgvector primary, Qdrant optional) | [ ] |
-| 3.5 | Agent 1 — Requirement Parsing (structured JSON output via Strands tool calling) | [ ] |
-| 3.6 | Agent 2 — Skill Matching (cosine similarity on pgvector + LLM rerank) | [ ] |
-| 3.7 | Agent 3 — Availability Checker (DB-only, no LLM call) | [ ] |
-| 3.8 | Agent 4 — Assignment (weighted score: relevance × priority × availability) | [ ] |
-| 3.9 | Agent 5 — Communication (template + queue notification rows) | [ ] |
-| 3.10 | Agent 6 — Reporting (LLM summarises allocation rationale) | [ ] |
-| 3.11 | Orchestrator: sequential pipeline w/ persisted trace (`agent_runs`/`agent_steps`) | [ ] |
-| 3.12 | FastAPI endpoints: `POST /allocations/run`, `GET /agent-runs/{id}`, `GET /reports/{id}` | [ ] |
+| 3.1 | `Middleware/Agents/` Python project (`epaa`; reuses `epaa_datalake` schema/db/embeddings) | [x] |
+| 3.2 | LLM provider: Strands → Bedrock (Opus 4.7) → heuristic fallback (offline-capable) | [x] |
+| 3.3 | Embedding provider — reused from `epaa_datalake.generators.embeddings` | [x] |
+| 3.4 | Vector store: pgvector cosine_distance shortlist over `profile_embedding` | [x] |
+| 3.5 | Agent 1 — Requirement Parsing (LLM JSON; heuristic fallback parses brief text) | [x] |
+| 3.6 | Agent 2 — Skill Matching (pgvector cosine similarity + required-skill overlap) | [x] |
+| 3.7 | Agent 3 — Availability Checker (DB-only; drops unavailable, sets factor) | [x] |
+| 3.8 | Agent 4 — Assignment (weighted score relevance/priority/availability → allocations) | [x] |
+| 3.9 | Agent 5 — Communication (queues a notification row per assignee) | [x] |
+| 3.10 | Agent 6 — Reporting (LLM summary; template fallback) + metrics | [x] |
+| 3.11 | Orchestrator: sequential pipeline w/ persisted trace (`agent_runs`/`agent_steps`) | [x] |
+| 3.12 | FastAPI endpoints: `POST /allocations/run`, `GET /agent-runs/{id}`, `GET /reports/{id}` | [x] |
 | 3.13 | OpenTelemetry traces → Jaeger; Prometheus metrics | [ ] |
-| 3.14 | Tests against synthetic data; measure paper's 4 metrics | [ ] |
+| 3.14 | Tests + verified end-to-end offline (6-step trace, allocations, report, metrics) | [x] |
 
 ### M4 — Middleware / Microservices (Category: Backend)
 

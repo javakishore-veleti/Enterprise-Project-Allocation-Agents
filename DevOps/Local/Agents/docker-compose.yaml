@@ -1,0 +1,33 @@
+name: epaa-agents
+
+# The Agents service (FastAPI) hosting the 6 MCP-AI agents. Build context is
+# Middleware/ so the image can install the shared epaa_datalake data layer.
+
+services:
+  agents:
+    build:
+      context: ../../../Middleware
+      dockerfile: Agents/Dockerfile
+    image: epaa/agents:0.1.0
+    container_name: epaa-agents
+    restart: unless-stopped
+    environment:
+      POSTGRES_HOST: epaa-postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-epaa}
+      POSTGRES_USER: ${POSTGRES_USER:-epaa}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-epaa_local}
+      EMBEDDING_PROVIDER: ${EMBEDDING_PROVIDER:-hash}
+      EMBEDDING_DIM: ${EMBEDDING_DIM:-1024}
+      LLM_PROVIDER: ${LLM_PROVIDER:-auto}
+      BEDROCK_MODEL_ID: ${BEDROCK_MODEL_ID:-us.anthropic.claude-opus-4-7-v1:0}
+      AWS_REGION: ${AWS_REGION:-us-east-1}
+    ports:
+      - "${AGENTS_PORT:-8001}:8001"
+    networks:
+      - epaa-net
+
+networks:
+  epaa-net:
+    external: true
+    name: epaa-net
