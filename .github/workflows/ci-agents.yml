@@ -1,0 +1,44 @@
+name: ci-agents
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "Middleware/Agents/**"
+      - "Middleware/Datalake/**"
+      - ".github/workflows/ci-agents.yml"
+  pull_request:
+    paths:
+      - "Middleware/Agents/**"
+      - "Middleware/Datalake/**"
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install packages (datalake + agents) + tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install ./Middleware/Datalake/SyntheticDataAPI ./Middleware/Agents ruff pytest
+
+      - name: Ruff (lint)
+        run: |
+          ruff check \
+            Middleware/Datalake/SyntheticDataAPI/src \
+            Middleware/Agents/src
+
+      - name: Pytest (offline — hash embeddings, heuristic LLM)
+        env:
+          EMBEDDING_PROVIDER: hash
+          LLM_PROVIDER: heuristic
+        run: |
+          pytest -q \
+            Middleware/Datalake/SyntheticDataAPI/tests \
+            Middleware/Agents/tests

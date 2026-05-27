@@ -1,0 +1,38 @@
+name: ci-portals
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "Portals/**"
+      - ".github/workflows/ci-portals.yml"
+  pull_request:
+    paths:
+      - "Portals/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        portal:
+          - admin-portal
+          - projects-portal
+    defaults:
+      run:
+        working-directory: Portals/${{ matrix.portal }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: Portals/${{ matrix.portal }}/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run build

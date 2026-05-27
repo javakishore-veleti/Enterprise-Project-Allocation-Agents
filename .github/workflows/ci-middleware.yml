@@ -1,0 +1,38 @@
+name: ci-middleware
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "Middleware/*-service/**"
+      - "Middleware/api-gateway/**"
+      - ".github/workflows/ci-middleware.yml"
+  pull_request:
+    paths:
+      - "Middleware/*-service/**"
+      - "Middleware/api-gateway/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        service:
+          - employee-service
+          - project-service
+          - allocation-service
+          - notification-service
+          - reporting-service
+          - api-gateway
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      - name: Build ${{ matrix.service }}
+        run: mvn -B -ntp -DskipTests package -f Middleware/${{ matrix.service }}/pom.xml
