@@ -85,7 +85,7 @@ Enterprise-Project-Allocation-Agents/
 - M7 (AWS): complete — 7 Terraform modules (vpc/bedrock/rds/sagemaker/ecs/cognito/cloudfront) + dev env (validate+fmt clean); reusable workflow + 14 numbered Deploy/Destroy callers (**manual-only `workflow_dispatch`**; auth via **AWS keys in GitHub Secrets** `AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY`). Apply needs those + bootstrap (state bucket, lock table). ECS per-app task defs + real apply still open.
 - M8 (CI): complete — ci-agents (ruff+pytest), ci-middleware (6-service mvn matrix), ci-portals (ng build matrix); all three **green on GitHub Actions**.
 - M9 (alt frameworks: LangChain/OpenAI/Spring AI/HF/SageMaker adapters) — deferred learning track
-- M10 (docs/demo): pending
+- M10 (docs/demo): complete — `docs/{architecture,agents,api-contracts,data-model,demo}.md` + README docs index. Open: UI screenshots/GIF.
 
 If you are a fresh Claude session: **before doing any work, run TaskCreate to recreate the milestone tasks from `DevelopmentPlan.md §5` (M0.5 through M10)**. The previous session's task list does not persist.
 

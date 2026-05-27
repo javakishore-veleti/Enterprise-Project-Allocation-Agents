@@ -97,11 +97,25 @@ npm run stop
 npm run status
 ```
 
-> The orchestration scripts (`DevOps/Local/docker-all-*.sh`) and service code land milestone by milestone — see the status table in `DevelopmentPlan.md`. Until **M1** is complete, `npm run start` is a scaffold.
+> Fastest path: `bash DevOps/Local/smoke-test.sh` runs the paper's core flow
+> (Postgres + Datalake + Agents) end-to-end in containers. See [docs/demo.md](docs/demo.md).
+
+## Documentation
+
+- [docs/architecture.md](docs/architecture.md) — components, layers, allocation flow
+- [docs/agents.md](docs/agents.md) — the 6 agents, scoring, LLM/embedding providers
+- [docs/api-contracts.md](docs/api-contracts.md) — gateway routes + service REST contracts
+- [docs/data-model.md](docs/data-model.md) — Postgres schema & ownership
+- [docs/demo.md](docs/demo.md) — run guide & walkthrough
+- [DevelopmentPlan.md](DevelopmentPlan.md) — full milestone plan & status
 
 ## Status
 
-`M0` (plan + context) is complete. `M0.5` (bootstrap) is in progress. Track progress in **[DevelopmentPlan.md §5](./DevelopmentPlan.md)** — every task carries a `[ ] / [~] / [x] / [-]` marker.
+Milestones **M0–M8 complete** — synthetic data, the 6-agent pipeline, 6 Spring Boot
+microservices, both Angular portals, the containerized end-to-end smoke test, AWS
+Terraform + GitHub Actions, and green CI. Deferred/open: alternate-framework adapters
+(M9), UI screenshots, OTel dashboards, and a real AWS apply. Track everything in
+**[DevelopmentPlan.md §5](./DevelopmentPlan.md)** — each task carries a `[ ] / [~] / [x] / [-]` marker.
 
 ## License
 

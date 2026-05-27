@@ -469,11 +469,12 @@ Legend: `[ ]` pending · `[~]` in progress · `[x]` complete · `[-]` deferred
 
 | # | Task | Status |
 |---|------|--------|
-| 10.1 | `docs/architecture.md` with rendered diagram | [ ] |
-| 10.2 | `docs/agents.md` — per-agent prompts, inputs, outputs | [ ] |
-| 10.3 | `docs/api-contracts.md` — REST contracts | [ ] |
-| 10.4 | Demo script (`docs/demo.md`) showing end-to-end flow | [ ] |
-| 10.5 | Recorded GIF / screenshots in README | [ ] |
+| 10.1 | `docs/architecture.md` — components, layers, allocation flow, schema ownership | [x] |
+| 10.2 | `docs/agents.md` — the 6 agents, inputs/outputs, scoring, providers | [x] |
+| 10.3 | `docs/api-contracts.md` — gateway routes + all service REST contracts | [x] |
+| 10.4 | `docs/demo.md` — smoke test + full-stack run guide + walkthrough | [x] |
+| 10.5 | `docs/data-model.md` — schema tables, relationships, ownership | [x] |
+| 10.6 | Screenshots / GIF in README (needs a running UI capture) | [ ] |
 
 ---
 
