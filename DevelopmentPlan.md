@@ -384,12 +384,12 @@ Legend: `[ ]` pending · `[~]` in progress · `[x]` complete · `[-]` deferred
 
 | # | Task | Status |
 |---|------|--------|
-| 5.1 | `Portals/admin-portal` — Angular 18 scaffold + Tailwind | [ ] |
-| 5.2 | Admin shell: top menu bar (Home · Dashboard · Data Management · Administration) + routing | [ ] |
-| 5.3 | Data Management: left nav (Synthetic Data → type sub-levels) | [ ] |
-| 5.4 | Data Management: per-type searchable Airflow-workflow dropdown (from Airflow DAGs) | [ ] |
-| 5.5 | Workflow → Initiate Execution: workflow-specific criteria form → triggers DAG via Datalake API | [ ] |
-| 5.6 | Workflow → History: paginated past executions (15/page) + searchable columns (Airflow dagRuns) | [ ] |
+| 5.1 | `Portals/admin-portal` — Angular 18 + PrimeNG 18 (Slate+Indigo Aura preset). Builds clean. | [x] |
+| 5.2 | Admin shell: top menu bar (Home · Dashboard · Data Management · Administration) + routing | [x] |
+| 5.3 | Data Management: dark-slate left nav (Synthetic Data → type sub-levels) | [x] |
+| 5.4 | Data Management: per-type searchable Airflow-workflow dropdown (p-select, from Datalake API) | [x] |
+| 5.5 | Workflow → Initiate Execution: criteria form → POST /datalake/synthetic/generate | [x] |
+| 5.6 | Workflow → History: PrimeNG lazy p-table (15/page) + searchable (status/run-id) | [x] |
 | 5.7 | Admin: Employees CRUD page | [ ] |
 | 5.8 | Admin: Projects + Briefs page | [ ] |
 | 5.9 | Admin: Allocations page (trigger + result view) | [ ] |
