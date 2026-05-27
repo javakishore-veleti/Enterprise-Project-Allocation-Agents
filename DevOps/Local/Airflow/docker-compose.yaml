@@ -15,10 +15,22 @@ x-airflow-common: &airflow-common
     AIRFLOW__CORE__LOAD_EXAMPLES: "false"
     AIRFLOW__API__AUTH_BACKENDS: "airflow.api.auth.backend.session,airflow.api.auth.backend.basic_auth"
     AIRFLOW__WEBSERVER__EXPOSE_CONFIG: "true"
-    # DSN the DAG uses to write synthetic data into the app database
-    EPAA_DB_DSN: postgresql://${POSTGRES_USER:-epaa}:${POSTGRES_PASSWORD:-epaa_local}@epaa-postgres:5432/${POSTGRES_DB:-epaa}
+    # Make the epaa_datalake package (mounted below) importable by the DAG.
+    PYTHONPATH: /opt/airflow/epaa_src
+    # Extra deps the generators need (installed at container start — local only).
+    _PIP_ADDITIONAL_REQUIREMENTS: "faker>=30 sqlalchemy>=2.0 psycopg2-binary>=2.9 pgvector>=0.3 boto3>=1.35 pydantic-settings>=2.5 alembic>=1.13"
+    # App DB the DAG writes synthetic data into (read by epaa_datalake.config).
+    POSTGRES_HOST: epaa-postgres
+    POSTGRES_PORT: "5432"
+    POSTGRES_DB: ${POSTGRES_DB:-epaa}
+    POSTGRES_USER: ${POSTGRES_USER:-epaa}
+    POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-epaa_local}
+    EMBEDDING_PROVIDER: ${EMBEDDING_PROVIDER:-hash}
+    EMBEDDING_DIM: ${EMBEDDING_DIM:-1024}
+    AWS_REGION: ${AWS_REGION:-us-east-1}
   volumes:
     - ../../../Middleware/Datalake/DAGS:/opt/airflow/dags
+    - ../../../Middleware/Datalake/SyntheticDataAPI/src:/opt/airflow/epaa_src
     - epaa-airflow-logs:/opt/airflow/logs
   networks:
     - epaa-net

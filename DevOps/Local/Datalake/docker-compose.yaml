@@ -1,0 +1,34 @@
+name: epaa-datalake-api
+
+# SyntheticDataAPI (FastAPI). Runs Alembic migrations on startup, then exposes
+# POST /synthetic/generate which triggers the SyntheticDataGen Airflow DAG.
+
+services:
+  datalake-api:
+    build:
+      context: ../../../Middleware/Datalake/SyntheticDataAPI
+      dockerfile: Dockerfile
+    image: epaa/datalake-api:0.1.0
+    container_name: epaa-datalake-api
+    restart: unless-stopped
+    environment:
+      POSTGRES_HOST: epaa-postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-epaa}
+      POSTGRES_USER: ${POSTGRES_USER:-epaa}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-epaa_local}
+      EMBEDDING_PROVIDER: ${EMBEDDING_PROVIDER:-hash}
+      EMBEDDING_DIM: ${EMBEDDING_DIM:-1024}
+      AWS_REGION: ${AWS_REGION:-us-east-1}
+      AIRFLOW_BASE_URL: http://epaa-airflow-webserver:8080
+      AIRFLOW_USER: ${AIRFLOW_ADMIN_USER:-admin}
+      AIRFLOW_PASSWORD: ${AIRFLOW_ADMIN_PASSWORD:-admin}
+    ports:
+      - "${DATALAKE_API_PORT:-8000}:8000"
+    networks:
+      - epaa-net
+
+networks:
+  epaa-net:
+    external: true
+    name: epaa-net

@@ -12,6 +12,7 @@
 #   postgres       postgres + pgvector + pgAdmin           (fully local image)
 #   observability  prometheus + jaeger + grafana + kibana (+ elasticsearch)
 #   airflow        apache airflow (datalake runtime; reuses your local image)
+#   datalake       SyntheticDataAPI (FastAPI; triggers the SyntheticDataGen DAG)
 #   vectordb       qdrant (optional, alternative to pgvector)
 #   agents         python agents service          (M3 — skipped until it exists)
 #   middleware     spring boot services           (M4 — skipped until it exists)
@@ -31,6 +32,7 @@ GRAFANA_COMPOSE="DevOps/Local/Observability/Grafana/docker-compose.yaml"
 JAEGER_COMPOSE="DevOps/Local/Observability/Jaeger/docker-compose.yaml"
 KIBANA_COMPOSE="DevOps/Local/Observability/Kibana/docker-compose.yaml"
 AIRFLOW_COMPOSE="DevOps/Local/Airflow/docker-compose.yaml"
+DATALAKE_COMPOSE="DevOps/Local/Datalake/docker-compose.yaml"
 QDRANT_COMPOSE="DevOps/Local/VectorDBs/Qdrant/docker-compose.yaml"
 AGENTS_COMPOSE="DevOps/Local/Agents/docker-compose.yaml"
 MIDDLEWARE_COMPOSE="DevOps/Local/Middleware/docker-compose.yaml"
@@ -85,6 +87,7 @@ case "$TARGET" in
   all)
     start_infra
     up "$AIRFLOW_COMPOSE"    "airflow"
+    up "$DATALAKE_COMPOSE"   "datalake-api"
     up "$AGENTS_COMPOSE"     "agents"
     up "$MIDDLEWARE_COMPOSE" "middleware"
     up "$PORTALS_COMPOSE"    "portals"
@@ -93,11 +96,12 @@ case "$TARGET" in
   postgres)       up "$POSTGRES_COMPOSE" "postgres+pgvector" ;;
   observability)  start_observability ;;
   airflow)        up "$AIRFLOW_COMPOSE"    "airflow" ;;
+  datalake)       up "$DATALAKE_COMPOSE"   "datalake-api" ;;
   vectordb)       up "$QDRANT_COMPOSE"     "qdrant" ;;
   agents)         up "$AGENTS_COMPOSE"     "agents" ;;
   middleware)     up "$MIDDLEWARE_COMPOSE" "middleware" ;;
   portals)        up "$PORTALS_COMPOSE"    "portals" ;;
-  *) die "unknown target '$TARGET' (try: all|infra|postgres|observability|airflow|vectordb|agents|middleware|portals)" ;;
+  *) die "unknown target '$TARGET' (try: all|infra|postgres|observability|airflow|datalake|vectordb|agents|middleware|portals)" ;;
 esac
 
 log "up complete. Run 'bash DevOps/Local/docker-all-status.sh' to check health."

@@ -32,6 +32,9 @@
     "start:airflow": "bash DevOps/Local/docker-all-up.sh airflow",
     "stop:airflow": "bash DevOps/Local/docker-all-down.sh airflow",
 
+    "start:datalake": "bash DevOps/Local/docker-all-up.sh datalake",
+    "stop:datalake": "bash DevOps/Local/docker-all-down.sh datalake",
+
     "start:vectordb": "bash DevOps/Local/docker-all-up.sh vectordb",
     "stop:vectordb": "bash DevOps/Local/docker-all-down.sh vectordb",
 

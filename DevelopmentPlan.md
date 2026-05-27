@@ -304,14 +304,16 @@ Legend: `[ ]` pending · `[~]` in progress · `[x]` complete · `[-]` deferred
 
 | # | Task | Status |
 |---|------|--------|
-| 2.1 | Alembic migrations for schema: employees, skills, employee_skills, projects, project_briefs, availability, allocations, agent_runs, agent_steps, notifications, reports (UUID-string PKs) | [ ] |
-| 2.2 | pgvector columns: `employees.profile_embedding`, `project_briefs.requirements_embedding` | [ ] |
-| 2.3 | Skill taxonomy + structured generators (Faker): 30–100 employees, 10–40 projects, availability | [ ] |
-| 2.4 | Text generation — hybrid: template/Faker default, `--use-llm` (Bedrock) for realistic briefs/bios | [ ] |
-| 2.5 | Embeddings backfill (Bedrock Titan / HF MiniLM) into pgvector | [ ] |
-| 2.6 | `DAGS/SyntheticDataGen` Airflow DAG: generate → embed → load into Postgres | [ ] |
-| 2.7 | `SyntheticDataAPI` FastAPI: `POST /synthetic/generate` triggers DAG (async) + `GET /runs/{id}` | [ ] |
-| 2.8 | Curated sample fixtures committed under `Middleware/Datalake/SyntheticDataAPI/samples/` | [ ] |
+| 2.1 | Alembic migrations for schema: employees, skills, employee_skills, projects, project_briefs, availability, allocations, agent_runs, agent_steps, notifications, reports (UUID-string PKs) | [x] |
+| 2.2 | pgvector columns: `employees.profile_embedding`, `project_briefs.requirements_embedding` (1024-dim, verified) | [x] |
+| 2.3 | Skill taxonomy + structured generators (Faker): 30–100 employees, 10–40 projects, availability | [x] |
+| 2.4 | Text generation — hybrid: template/Faker default, `--use-llm` (Bedrock) for realistic briefs/bios | [x] |
+| 2.5 | Embeddings: Bedrock Titan / HF MiniLM / hash fallback into pgvector (hash verified offline) | [x] |
+| 2.6 | `DAGS/SyntheticDataGen` Airflow DAG: migrate → generate → embed → load into Postgres | [x] |
+| 2.7 | `SyntheticDataAPI` FastAPI: `POST /synthetic/generate` (async DAG + sync inline) + `GET /runs/{id}` | [x] |
+| 2.8 | Verified end-to-end: migrations + generate loaded 12 tables; pytest 4/4 green | [x] |
+| 2.9 | Curated sample fixtures committed under `SyntheticDataAPI/samples/` | [ ] |
+| 2.10 | Run the DAG inside the Airflow container (validate `_PIP_ADDITIONAL_REQUIREMENTS` + DAG import) | [ ] |
 
 ### M3 — Agents Layer (Category: AI / Agents)
 

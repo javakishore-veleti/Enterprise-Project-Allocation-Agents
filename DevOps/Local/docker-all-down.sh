@@ -28,6 +28,7 @@ GRAFANA_COMPOSE="DevOps/Local/Observability/Grafana/docker-compose.yaml"
 JAEGER_COMPOSE="DevOps/Local/Observability/Jaeger/docker-compose.yaml"
 KIBANA_COMPOSE="DevOps/Local/Observability/Kibana/docker-compose.yaml"
 AIRFLOW_COMPOSE="DevOps/Local/Airflow/docker-compose.yaml"
+DATALAKE_COMPOSE="DevOps/Local/Datalake/docker-compose.yaml"
 QDRANT_COMPOSE="DevOps/Local/VectorDBs/Qdrant/docker-compose.yaml"
 AGENTS_COMPOSE="DevOps/Local/Agents/docker-compose.yaml"
 MIDDLEWARE_COMPOSE="DevOps/Local/Middleware/docker-compose.yaml"
@@ -63,6 +64,7 @@ case "$TARGET" in
     down "$PORTALS_COMPOSE"    "portals"
     down "$MIDDLEWARE_COMPOSE" "middleware"
     down "$AGENTS_COMPOSE"     "agents"
+    down "$DATALAKE_COMPOSE"   "datalake-api"
     down "$AIRFLOW_COMPOSE"    "airflow"
     stop_infra
     ;;
@@ -70,6 +72,7 @@ case "$TARGET" in
   postgres)       down "$POSTGRES_COMPOSE" "postgres+pgvector" ;;
   observability)  stop_observability ;;
   airflow)        down "$AIRFLOW_COMPOSE"    "airflow" ;;
+  datalake)       down "$DATALAKE_COMPOSE"   "datalake-api" ;;
   vectordb)       down "$QDRANT_COMPOSE"     "qdrant" ;;
   agents)         down "$AGENTS_COMPOSE"     "agents" ;;
   middleware)     down "$MIDDLEWARE_COMPOSE" "middleware" ;;
