@@ -358,20 +358,48 @@ Legend: `[ ]` pending · `[~]` in progress · `[x]` complete · `[-]` deferred
 
 ### M5 — Portals (Category: Frontend)
 
+**Admin portal information architecture (mandated):**
+- **Top menu bar:** `Home` · `Dashboard` · `Data Management` · `Administration`.
+- **Data Management** opens a **left nav** with `Synthetic Data` and, nested under it, the
+  **synthetic-data types** (e.g. Employees, Projects, Briefs, Full Dataset) as sub-levels.
+- Selecting a type shows, on the **right**, a **searchable dropdown of the Apache Airflow workflows**
+  scoped to that type (sourced from Airflow DAGs, e.g. tagged by type).
+- Selecting a workflow reveals two actions:
+  - **Initiate Execution** → a workflow-specific **criteria/parameters form** (maps to the DAG's
+    `conf`), submits via the Datalake `POST /synthetic/generate` (or the workflow's trigger endpoint).
+  - **History** → a **paginated table of past executions, 15 per page, with searchable columns**
+    (run id, state, trigger time, duration, params), sourced from the Airflow REST `dagRuns` API.
+
+```
+[Home] [Dashboard] [Data Management] [Administration]
+ └─ Data Management
+    ├─ Synthetic Data
+    │   ├─ Employees ─┐
+    │   ├─ Projects   │→ right pane: ▸ workflow dropdown (searchable)
+    │   ├─ Briefs     │                 └─ <workflow> → [Initiate Execution] [History]
+    │   └─ Full Dataset                       Initiate → criteria form (DAG conf)
+    │                                          History  → 15/page, searchable columns
+```
+
 | # | Task | Status |
 |---|------|--------|
 | 5.1 | `Portals/admin-portal` — Angular 18 scaffold + Tailwind | [ ] |
-| 5.2 | Admin: Employees CRUD page | [ ] |
-| 5.3 | Admin: Projects + Briefs page | [ ] |
-| 5.4 | Admin: Allocations page (trigger + result view) | [ ] |
-| 5.5 | Admin: **Agent Monitor** — live trace of 6 agents (SSE/WebSocket) | [ ] |
-| 5.6 | Admin: Reports page (paper's 4 metrics + LLM rationale) | [ ] |
-| 5.7 | `Portals/projects-portal` — Angular 18 scaffold | [ ] |
-| 5.8 | Customer: Submit Brief page | [ ] |
-| 5.9 | Customer: My Projects + status | [ ] |
-| 5.10 | Customer: Notifications inbox | [ ] |
-| 5.11 | Auth wiring (JWT issued by Spring; Cognito in M7) | [ ] |
-| 5.12 | `DevOps/Local/Portals/docker-compose.yaml` (nginx-served) | [ ] |
+| 5.2 | Admin shell: top menu bar (Home · Dashboard · Data Management · Administration) + routing | [ ] |
+| 5.3 | Data Management: left nav (Synthetic Data → type sub-levels) | [ ] |
+| 5.4 | Data Management: per-type searchable Airflow-workflow dropdown (from Airflow DAGs) | [ ] |
+| 5.5 | Workflow → Initiate Execution: workflow-specific criteria form → triggers DAG via Datalake API | [ ] |
+| 5.6 | Workflow → History: paginated past executions (15/page) + searchable columns (Airflow dagRuns) | [ ] |
+| 5.7 | Admin: Employees CRUD page | [ ] |
+| 5.8 | Admin: Projects + Briefs page | [ ] |
+| 5.9 | Admin: Allocations page (trigger + result view) | [ ] |
+| 5.10 | Admin: **Agent Monitor** — live trace of 6 agents (SSE/WebSocket) | [ ] |
+| 5.11 | Admin: Reports page (paper's 4 metrics + LLM rationale) | [ ] |
+| 5.12 | `Portals/projects-portal` — Angular 18 scaffold | [ ] |
+| 5.13 | Customer: Submit Brief page | [ ] |
+| 5.14 | Customer: My Projects + status | [ ] |
+| 5.15 | Customer: Notifications inbox | [ ] |
+| 5.16 | Auth wiring (JWT issued by Spring; Cognito in M7) | [ ] |
+| 5.17 | `DevOps/Local/Portals/docker-compose.yaml` (nginx-served) | [ ] |
 
 ### M6 — End-to-End Local (Category: Integration)
 
