@@ -80,8 +80,10 @@ Enterprise-Project-Allocation-Agents/
 - M2 (Data layer + Datalake): complete — Alembic schema (UUID-string PKs, pgvector), generators, SyntheticDataAPI + DAG, wf_def/wf_executions registry; verified + pytest green
 - M3 (Agents service): complete — 6 agents in `Middleware/Agents` (`epaa`), Strands→Bedrock→heuristic LLM, pgvector skill matching, orchestrator persists `agent_runs`/`agent_steps`, FastAPI; verified end-to-end offline. (OTel/Jaeger pending — 3.13.)
 - M4 (Spring Boot microservices): complete — all 6 services built (employee/project/allocation/notification/reporting per-service 6-module archetype + api-gateway). employee-service runtime-verified; allocation-service calls the Agents API via RestClient. Remaining wiring (per-service Dockerfiles + Middleware compose + OTel) folds into M6.
-- M5 (Portals: Angular admin + projects): *next* — propose professional palettes first (see memory feedback-ui-design)
-- M6+ (E2E → AWS): pending
+- M5 (Portals): both Angular 18 + PrimeNG portals (Slate+Indigo) build; admin Data Management flow + customer Submit/Projects/Notifications done. Remaining: admin Employees/Projects CRUD, Agent Monitor, Reports, auth.
+- M6 (E2E): Dockerfiles (6 services + 2 portals) + Middleware/Portals composes; **containerized core E2E verified** (Datalake seeds Postgres → Agents 6-agent pipeline over HTTP → allocations + report via `DevOps/Local/smoke-test.sh`). Shared-Postgres schema reconciled (`reports.metrics_json`). Open: OTel/Grafana dashboards, full 11-container bring-up, seed idempotency.
+- M7 (AWS Terraform + GH Actions deploy/destroy): *next*
+- M8+ (CI → alt frameworks → docs): pending
 
 If you are a fresh Claude session: **before doing any work, run TaskCreate to recreate the milestone tasks from `DevelopmentPlan.md §5` (M0.5 through M10)**. The previous session's task list does not persist.
 

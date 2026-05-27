@@ -355,7 +355,7 @@ Legend: `[ ]` pending · `[~]` in progress · `[x]` complete · `[-]` deferred
 | 4.7 | `reporting-service` (6 modules) — reports read-model + latest-for-project. Built clean. | [x] |
 | 4.8 | `api-gateway` (Spring Cloud Gateway) routing to all services. Built + boots healthy. JWT deferred → M5/M7. | [x] |
 | 4.9 | Springdoc OpenAPI on every service [x]; OpenTelemetry wiring → M6 | [~] |
-| 4.10 | Per-service Dockerfiles + `DevOps/Local/Middleware/docker-compose.yaml` → M6 (full-stack bring-up) | [ ] |
+| 4.10 | Per-service Dockerfiles + `DevOps/Local/Middleware/docker-compose.yaml` (done in M6) | [x] |
 
 ### M5 — Portals (Category: Frontend)
 
@@ -400,16 +400,22 @@ Legend: `[ ]` pending · `[~]` in progress · `[x]` complete · `[-]` deferred
 | 5.14 | Customer: My Projects + status (lazy table) | [x] |
 | 5.15 | Customer: Notifications inbox (lazy table) | [x] |
 | 5.16 | Auth wiring (JWT issued by Spring; Cognito in M7) | [ ] |
-| 5.17 | Per-portal Dockerfiles + `DevOps/Local/Portals/docker-compose.yaml` (nginx) → M6 | [ ] |
+| 5.17 | Per-portal Dockerfiles + `DevOps/Local/Portals/docker-compose.yaml` (nginx) (done in M6) | [x] |
 
 ### M6 — End-to-End Local (Category: Integration)
 
+> Dockerfiles: 6 Spring services (multi-stage Maven), 2 portals (node build → nginx); Agents + Datalake
+> already had Dockerfiles. Composes: `DevOps/Local/Middleware` (services on shared Postgres) +
+> `DevOps/Local/Portals` (nginx). Schema reconciled (`reports.metrics_json`) so Spring + agents share one DB.
+
 | # | Task | Status |
 |---|------|--------|
-| 6.1 | `docker-all-up.sh` brings up entire stack in correct order with healthchecks | [ ] |
-| 6.2 | Seed → submit brief from customer portal → see allocation + report in admin | [ ] |
-| 6.3 | Verify Jaeger traces span Portal → Gateway → Allocation → Agents → Postgres | [ ] |
-| 6.4 | Grafana dashboard for the paper's 4 evaluation metrics | [ ] |
+| 6.1 | Per-service + per-portal Dockerfiles; Middleware + Portals composes; all 4 composes `config`-valid | [x] |
+| 6.2 | **Containerized E2E verified**: Datalake image seeds Postgres → Agents image runs 6-agent pipeline over HTTP → allocations + report (`smoke-test.sh`) | [x] |
+| 6.3 | Full `docker-all-up all` (11 containers) brings up the whole stack | [~] (wired + composes valid; Python core run-verified; full Java/Angular image bring-up is the user's `npm start`) |
+| 6.4 | OTel traces → Jaeger across Portal→Gateway→Allocation→Agents | [ ] |
+| 6.5 | Grafana dashboard for the paper's 4 evaluation metrics | [ ] |
+| 6.6 | Seed idempotency (truncate-or-upsert) so re-seeding doesn't duplicate | [ ] |
 
 ### M7 — AWS Deployment (Category: Cloud)
 

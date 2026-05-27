@@ -4,6 +4,8 @@ Summary text is written by the LLM when available, otherwise a clear template.
 """
 from __future__ import annotations
 
+import json
+
 from epaa_datalake.models import Report
 
 from ..providers import llm
@@ -40,7 +42,7 @@ class ReportingAgent(BaseAgent):
             summary, source = template, "template"
 
         report = Report(project_id=ctx.project_id, run_id=ctx.metrics.get("run_id"),
-                        summary_text=summary, metrics=ctx.metrics)
+                        summary_text=summary, metrics_json=json.dumps(ctx.metrics))
         session.add(report)
         ctx.report = {"summary": summary, "source": source, "metrics": ctx.metrics}
         return ctx.report

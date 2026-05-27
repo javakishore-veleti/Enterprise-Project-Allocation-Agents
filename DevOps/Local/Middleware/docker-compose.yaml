@@ -1,0 +1,91 @@
+name: epaa-middleware
+
+# The 6 Spring Boot services. Configured for SHARED Postgres (DB_PROFILE=postgres)
+# so the portal → project-service → agents flow operates on one database.
+# The Datalake (Alembic) owns the shared schema and must migrate first
+# (docker-all-up starts datalake before middleware); each service's Liquibase
+# then MARK_RANs the pre-existing tables and creates only what it owns.
+
+x-spring-env: &spring-env
+  SPRING_DATASOURCE_URL: jdbc:postgresql://epaa-postgres:5432/${POSTGRES_DB:-epaa}
+  SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-epaa}
+  SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-epaa_local}
+
+services:
+  employee-service:
+    build: { context: ../../../Middleware/employee-service }
+    image: epaa/employee-service:0.1.0
+    container_name: epaa-employee-service
+    restart: unless-stopped
+    environment:
+      <<: *spring-env
+    ports: ["${EMPLOYEE_SERVICE_PORT:-8081}:8081"]
+    networks: [epaa-net]
+
+  project-service:
+    build: { context: ../../../Middleware/project-service }
+    image: epaa/project-service:0.1.0
+    container_name: epaa-project-service
+    restart: unless-stopped
+    environment:
+      <<: *spring-env
+    ports: ["${PROJECT_SERVICE_PORT:-8082}:8082"]
+    networks: [epaa-net]
+
+  allocation-service:
+    build: { context: ../../../Middleware/allocation-service }
+    image: epaa/allocation-service:0.1.0
+    container_name: epaa-allocation-service
+    restart: unless-stopped
+    environment:
+      <<: *spring-env
+      AGENTS_BASE_URL: http://epaa-agents:8001
+    ports: ["${ALLOCATION_SERVICE_PORT:-8083}:8083"]
+    networks: [epaa-net]
+
+  notification-service:
+    build: { context: ../../../Middleware/notification-service }
+    image: epaa/notification-service:0.1.0
+    container_name: epaa-notification-service
+    restart: unless-stopped
+    environment:
+      <<: *spring-env
+    ports: ["${NOTIFICATION_SERVICE_PORT:-8084}:8084"]
+    networks: [epaa-net]
+
+  reporting-service:
+    build: { context: ../../../Middleware/reporting-service }
+    image: epaa/reporting-service:0.1.0
+    container_name: epaa-reporting-service
+    restart: unless-stopped
+    environment:
+      <<: *spring-env
+    ports: ["${REPORTING_SERVICE_PORT:-8085}:8085"]
+    networks: [epaa-net]
+
+  api-gateway:
+    build: { context: ../../../Middleware/api-gateway }
+    image: epaa/api-gateway:0.1.0
+    container_name: epaa-api-gateway
+    restart: unless-stopped
+    environment:
+      EMPLOYEE_SERVICE_URI: http://epaa-employee-service:8081
+      PROJECT_SERVICE_URI: http://epaa-project-service:8082
+      ALLOCATION_SERVICE_URI: http://epaa-allocation-service:8083
+      NOTIFICATION_SERVICE_URI: http://epaa-notification-service:8084
+      REPORTING_SERVICE_URI: http://epaa-reporting-service:8085
+      AGENTS_URI: http://epaa-agents:8001
+      DATALAKE_URI: http://epaa-datalake-api:8000
+    ports: ["${API_GATEWAY_PORT:-8080}:8080"]
+    depends_on:
+      - employee-service
+      - project-service
+      - allocation-service
+      - notification-service
+      - reporting-service
+    networks: [epaa-net]
+
+networks:
+  epaa-net:
+    external: true
+    name: epaa-net

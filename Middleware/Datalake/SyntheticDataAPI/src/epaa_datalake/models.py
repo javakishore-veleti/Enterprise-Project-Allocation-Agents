@@ -162,7 +162,8 @@ class Report(Pk, Base):
     project_id: Mapped[str] = mapped_column(ForeignKey(f"{SCHEMA}.projects.id", ondelete="CASCADE"), index=True)
     run_id: Mapped[str | None] = mapped_column(ForeignKey(f"{SCHEMA}.agent_runs.id", ondelete="SET NULL"), nullable=True)
     summary_text: Mapped[str] = mapped_column(Text)
-    metrics: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    # JSON stored as text so the Java reporting-service (metrics_json) shares this table.
+    metrics_json: Mapped[str | None] = mapped_column(Text, nullable=True)
 
 
 # --- Workflow registry & execution history (backs the admin Data Management UI) ---

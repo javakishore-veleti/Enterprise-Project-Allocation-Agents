@@ -1,6 +1,8 @@
 """Agents API routes."""
 from __future__ import annotations
 
+import json
+
 from fastapi import APIRouter, HTTPException
 
 from sqlalchemy import select
@@ -44,5 +46,6 @@ def get_report(project_id: str) -> ReportResponse:
         )
         if report is None:
             raise HTTPException(status_code=404, detail=f"no report for project {project_id}")
+        metrics = json.loads(report.metrics_json) if report.metrics_json else None
         return ReportResponse(project_id=report.project_id, run_id=report.run_id,
-                              summary_text=report.summary_text, metrics=report.metrics)
+                              summary_text=report.summary_text, metrics=metrics)

@@ -1,0 +1,27 @@
+name: epaa-portals
+
+# Angular portals built and served by nginx. They call the API gateway at
+# http://localhost:8080 from the browser (the gateway publishes CORS), so no
+# nginx proxy is needed.
+
+services:
+  admin-portal:
+    build: { context: ../../../Portals/admin-portal }
+    image: epaa/admin-portal:0.1.0
+    container_name: epaa-admin-portal
+    restart: unless-stopped
+    ports: ["${ADMIN_PORTAL_PORT:-4200}:80"]
+    networks: [epaa-net]
+
+  projects-portal:
+    build: { context: ../../../Portals/projects-portal }
+    image: epaa/projects-portal:0.1.0
+    container_name: epaa-projects-portal
+    restart: unless-stopped
+    ports: ["${PROJECTS_PORTAL_PORT:-4201}:80"]
+    networks: [epaa-net]
+
+networks:
+  epaa-net:
+    external: true
+    name: epaa-net
