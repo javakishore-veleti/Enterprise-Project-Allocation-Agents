@@ -85,7 +85,9 @@ Enterprise-Project-Allocation-Agents/
 - M7 (AWS): complete — 7 Terraform modules (vpc/bedrock/rds/sagemaker/ecs/cognito/cloudfront) + dev env (validate+fmt clean); reusable workflow + 14 numbered Deploy/Destroy callers (**manual-only `workflow_dispatch`**; auth via **AWS keys in GitHub Secrets** `AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY`). Apply needs those + bootstrap (state bucket, lock table). ECS per-app task defs + real apply still open.
 - M8 (CI): complete — ci-agents (ruff+pytest), ci-middleware (6-service mvn matrix), ci-portals (ng build matrix); all three **green on GitHub Actions**.
 - M9 (alt frameworks): complete — pluggable LLM backends (strands/bedrock/langchain/openai/ollama/heuristic) via `LLM_PROVIDER` + `docs/adapters.md`; Spring AI + SageMaker documented as alternate paths.
-- M10 (docs/demo): complete — `docs/{architecture,agents,api-contracts,data-model,adapters,demo}.md` + README index.
+- M10 (docs/demo): complete — `docs/{architecture,agents,api-contracts,data-model,adapters,datalake-design,demo}.md` + `docs/Design/` draw.io (12 tabs) + README index.
+- M11 (real Datalake + Vector KB): **design only** — `docs/datalake-design.md` (today's "Datalake" is a Synthetic Data Service → pgvector; the real one is a planned milestone).
+- M12 (v2 orchestrator): complete — LangGraph `orchestrator_langgraph.py` reusing the 6 agents + conditional edge; side-by-side with v1, selected by `ORCHESTRATOR` (custom|langgraph) via `runner.py`; verified end-to-end. v1 custom orchestrator still the default.
 - Open items done: seed idempotency, sample fixtures, Grafana metrics dashboard, OTel (Python), admin pages, ECS task defs.
 - **Genuinely blocked here (need AWS creds / browser):** real `terraform apply` (7.17), live SageMaker endpoint (9.5), UI screenshots (10.6). Also remaining: auth (Cognito/JWT), Spring OTel, in-container Airflow DAG run.
 

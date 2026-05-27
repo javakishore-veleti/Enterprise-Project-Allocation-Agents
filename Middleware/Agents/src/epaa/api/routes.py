@@ -10,7 +10,7 @@ from sqlalchemy import select
 from epaa_datalake.db import session_scope
 from epaa_datalake.models import Report
 
-from .. import orchestrator
+from .. import orchestrator, runner
 from .schemas import AgentRunResponse, ReportResponse, RunAllocationRequest, RunAllocationResponse
 
 router = APIRouter()
@@ -24,7 +24,7 @@ def health() -> dict:
 @router.post("/allocations/run", response_model=RunAllocationResponse)
 def run_allocation(req: RunAllocationRequest) -> RunAllocationResponse:
     try:
-        result = orchestrator.run_allocation(req.project_id)
+        result = runner.run_allocation(req.project_id)
     except orchestrator.ProjectNotFound as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     return RunAllocationResponse(**result)

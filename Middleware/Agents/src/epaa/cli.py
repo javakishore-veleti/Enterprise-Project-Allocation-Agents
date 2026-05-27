@@ -10,7 +10,7 @@ from sqlalchemy import select
 from epaa_datalake.db import session_scope
 from epaa_datalake.models import ProjectBrief
 
-from . import orchestrator
+from . import runner
 
 
 def _any_project_id() -> str | None:
@@ -32,7 +32,7 @@ def main(argv: list[str] | None = None) -> int:
         if not pid:
             print("no project id (pass --project-id or --any)")
             return 1
-        print(json.dumps(orchestrator.run_allocation(pid), indent=2, default=str))
+        print(json.dumps(runner.run_allocation(pid), indent=2, default=str))
         return 0
     return 1
 

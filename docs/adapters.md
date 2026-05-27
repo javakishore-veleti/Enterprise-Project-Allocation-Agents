@@ -1,4 +1,23 @@
-# Alternate framework adapters (M9)
+# Alternate framework adapters (M9) & orchestration (M12)
+
+Two independent switches: **`LLM_PROVIDER`** (which LLM framework makes a completion)
+and **`ORCHESTRATOR`** (how the 6 agents are sequenced).
+
+## Orchestration — `ORCHESTRATOR`
+
+| Value | Implementation | Notes |
+|-------|----------------|-------|
+| `custom` (default) | `orchestrator.py` — hand-rolled sequential pipeline (v1) | no extra deps; always available |
+| `langgraph` | `orchestrator_langgraph.py` — LangGraph `StateGraph` (v2) | needs the `langgraph` extra; reuses the **same 6 agent classes** |
+
+Both persist the same `agent_runs`/`agent_steps` trace and return the same response
+shape (v2 adds `"orchestrator": "langgraph"`). `runner.py` selects at runtime and falls
+back to `custom` if `langgraph` isn't installed. The v2 graph also adds a **conditional
+edge**: if the Availability Checker leaves no available candidates, it skips Assignment
++ Communication and routes straight to Reporting — something the linear v1 can't express
+as cleanly. Switch with `ORCHESTRATOR=langgraph` (install `pip install '.[langgraph]'`).
+
+## LLM backends — `LLM_PROVIDER`
 
 The agents reason through a single `complete(system, prompt)` interface
 (`Middleware/Agents/src/epaa/providers/llm.py`), so the underlying framework is a

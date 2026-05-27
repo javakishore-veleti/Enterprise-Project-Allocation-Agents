@@ -22,6 +22,7 @@ class RunAllocationResponse(BaseModel):
     assignments: list[AssignmentDTO]
     report: str | None = None
     metrics: dict
+    orchestrator: str | None = None
 
 
 class AgentStepDTO(BaseModel):

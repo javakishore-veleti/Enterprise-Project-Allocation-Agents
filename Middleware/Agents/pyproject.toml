@@ -24,6 +24,7 @@ dependencies = [
 # deterministic/offline path runs without network. Install per backend you use.
 strands = ["strands-agents>=0.1"]
 langchain = ["langchain-aws>=0.2", "langchain-core>=0.3"]
+langgraph = ["langgraph>=0.2", "langchain-core>=0.3"]
 openai = ["openai>=1.40"]
 otel = [
     "opentelemetry-sdk>=1.27",

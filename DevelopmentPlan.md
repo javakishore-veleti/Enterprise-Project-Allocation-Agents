@@ -496,6 +496,20 @@ Legend: `[ ]` pending · `[~]` in progress · `[x]` complete · `[-]` deferred
 | 11.5 | Admin portal initiates initial / incremental builds; daily on Airflow schedule | [ ] |
 | 11.6 | Skill-Matching Agent retrieves over the real embedded KB (not synthetic data) | [ ] |
 
+### M12 — v2 orchestrator on a real framework (LangGraph)
+
+> Replace the hand-rolled orchestration with a proper multi-agent framework, side-by-side
+> with v1 (selectable via `ORCHESTRATOR`). See [docs/adapters.md](docs/adapters.md).
+
+| # | Task | Status |
+|---|------|--------|
+| 12.1 | `orchestrator_langgraph.py` — LangGraph `StateGraph` reusing the 6 agent classes | [x] |
+| 12.2 | Conditional edge (skip Assignment+Communication when no one is available) | [x] |
+| 12.3 | `runner.py` dispatch via `ORCHESTRATOR` (custom \| langgraph) + graceful fallback | [x] |
+| 12.4 | `langgraph` optional extra; API/CLI use the dispatcher | [x] |
+| 12.5 | Verified end-to-end against Postgres (assignments + report + trace); ruff + pytest 5/5 | [x] |
+| 12.6 | (future) richer graph: retries, human-in-the-loop approval, checkpointing/streaming | [ ] |
+
 ---
 
 ## 6. AWS workflow numbering convention

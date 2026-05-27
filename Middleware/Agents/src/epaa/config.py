@@ -10,6 +10,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class AgentSettings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore", case_sensitive=False)
 
+    # Orchestrator: custom (hand-rolled v1) | langgraph (v2 graph)
+    orchestrator: str = "custom"
+
     # LLM backend: auto | strands | bedrock | langchain | openai | ollama | heuristic
     llm_provider: str = "auto"
     bedrock_model_id: str = "us.anthropic.claude-opus-4-7-v1:0"
