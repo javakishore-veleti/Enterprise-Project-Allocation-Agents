@@ -11,6 +11,8 @@ class GenerateRequest(BaseModel):
     num_projects: int = Field(20, ge=1, le=200)
     seed: int = 42
     use_llm: bool = False
+    # truncate domain tables first so re-seeding is idempotent.
+    reset: bool = True
     # async (default) triggers the Airflow DAG; sync runs the pipeline inline.
     run_async: bool = True
 

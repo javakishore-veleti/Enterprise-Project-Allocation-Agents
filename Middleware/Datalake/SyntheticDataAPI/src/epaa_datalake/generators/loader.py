@@ -4,9 +4,10 @@ from __future__ import annotations
 import datetime as dt
 import random
 
-from sqlalchemy import select
+from sqlalchemy import select, text
 
 from ..db import session_scope
+from ..models import SCHEMA
 from ..models import (
     Allocation,
     Availability,
@@ -33,12 +34,26 @@ def _upsert_skills(session, dataset: Dataset) -> dict[str, str]:
     return existing
 
 
-def load(dataset: Dataset, emp_embeddings: list[list[float]], brief_embeddings: list[list[float]]) -> dict[str, int]:
+def load(
+    dataset: Dataset,
+    emp_embeddings: list[list[float]],
+    brief_embeddings: list[list[float]],
+    reset: bool = True,
+) -> dict[str, int]:
+    """Load a dataset. With ``reset`` (default), truncate the domain tables first
+    so re-seeding is idempotent (no duplicate employees/projects). CASCADE also
+    clears dependent runtime rows (allocations, agent_runs/steps, notifications,
+    reports); the workflow registry (wf_def/wf_executions) is preserved."""
     rnd = random.Random(1234)
     counts = {"skills": 0, "employees": 0, "employee_skills": 0, "projects": 0,
               "briefs": 0, "availability": 0, "allocations": 0}
 
     with session_scope() as session:
+        if reset:
+            session.execute(text(
+                f"TRUNCATE {SCHEMA}.skills, {SCHEMA}.employees, {SCHEMA}.projects "
+                f"RESTART IDENTITY CASCADE"
+            ))
         skill_ids = _upsert_skills(session, dataset)
         counts["skills"] = len(skill_ids)
 

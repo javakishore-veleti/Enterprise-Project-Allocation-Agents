@@ -53,7 +53,7 @@ def generate(req: GenerateRequest) -> GenerateResponse:
     exec_id = workflows.start_execution(wf_def_id, configs=conf, engine_run_id=None)
     spec = GenSpec(num_employees=req.num_employees, num_projects=req.num_projects,
                    seed=req.seed, use_llm=req.use_llm)
-    summary = run_pipeline(spec, persist=True)
+    summary = run_pipeline(spec, persist=True, reset=req.reset)
     workflows.complete_execution(exec_id, status="success", results=summary)
     return GenerateResponse(mode="sync", summary=summary)
 

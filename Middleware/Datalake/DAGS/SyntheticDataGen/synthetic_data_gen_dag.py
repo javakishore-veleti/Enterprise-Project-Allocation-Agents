@@ -44,7 +44,7 @@ def synthetic_data_gen():
             seed=int(conf["seed"]),
             use_llm=bool(conf["use_llm"]),
         )
-        summary = run_pipeline(spec, persist=True)
+        summary = run_pipeline(spec, persist=True, reset=bool(conf.get("reset", True)))
         print("Synthetic data load summary:", summary)
         return summary
 

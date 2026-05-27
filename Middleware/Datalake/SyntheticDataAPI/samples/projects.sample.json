@@ -1,0 +1,17 @@
+[
+  {
+    "id": "b6423a5a-02cf-422e-9dd8-4e256cb0be49",
+    "name": "Unleash Impactful Portals Initiative",
+    "client_name": "Colon-Carlson",
+    "priority": "high",
+    "complexity": "high",
+    "duration_weeks": 12,
+    "required_headcount": 5,
+    "start_date": "2026-07-01",
+    "status": "open",
+    "brief": {
+      "brief_text": "Colon-Carlson is launching the \"Unleash Impactful Portals Initiative\". We need a team of about 5 for roughly 12 weeks starting Jul 2026. This is a high-priority, high-complexity effort. Required skills: Java, AWS, Angular, PostgreSQL, Kafka. Looking for people who can hit the ground running.",
+      "requirements_embedding": "vector(1024) — omitted"
+    }
+  }
+]

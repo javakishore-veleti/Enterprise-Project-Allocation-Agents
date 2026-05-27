@@ -1,0 +1,68 @@
+{
+  "uid": "epaa-metrics",
+  "title": "EPAA — Allocation Metrics",
+  "tags": ["epaa", "mcp-ai"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Avg allocation time (ms)",
+      "datasource": { "type": "postgres", "uid": "EPAA-Postgres" },
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT AVG(allocation_time_ms) AS value FROM epaa.agent_runs WHERE status = 'success';"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Total conflicts avoided",
+      "datasource": { "type": "postgres", "uid": "EPAA-Postgres" },
+      "gridPos": { "h": 6, "w": 6, "x": 6, "y": 0 },
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT SUM((metrics->>'conflicts_avoided')::int) AS value FROM epaa.agent_runs WHERE metrics ? 'conflicts_avoided';"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Resource utilization (assigned / requested)",
+      "datasource": { "type": "postgres", "uid": "EPAA-Postgres" },
+      "gridPos": { "h": 6, "w": 6, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT CASE WHEN SUM((metrics->>'headcount_requested')::int) > 0 THEN ROUND(100.0 * SUM((metrics->>'headcount_assigned')::int) / SUM((metrics->>'headcount_requested')::int), 1) ELSE 0 END AS value FROM epaa.agent_runs WHERE metrics ? 'headcount_requested';"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "percent" } }
+    },
+    {
+      "type": "stat",
+      "title": "Human intervention",
+      "datasource": { "type": "postgres", "uid": "EPAA-Postgres" },
+      "gridPos": { "h": 6, "w": 6, "x": 18, "y": 0 },
+      "targets": [{ "format": "table", "rawSql": "SELECT 0 AS value;" }],
+      "fieldConfig": { "defaults": { "unit": "percent" } }
+    },
+    {
+      "type": "timeseries",
+      "title": "Allocation time per run (ms)",
+      "datasource": { "type": "postgres", "uid": "EPAA-Postgres" },
+      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 6 },
+      "targets": [
+        {
+          "format": "time_series",
+          "rawSql": "SELECT started_at AS time, allocation_time_ms AS \"allocation_time_ms\" FROM epaa.agent_runs WHERE status = 'success' ORDER BY started_at;"
+        }
+      ]
+    }
+  ]
+}

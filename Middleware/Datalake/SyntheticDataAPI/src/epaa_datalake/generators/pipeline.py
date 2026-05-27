@@ -10,10 +10,12 @@ from .structured import GenSpec, generate_dataset
 log = logging.getLogger(__name__)
 
 
-def run(spec: GenSpec, persist: bool = True) -> dict:
+def run(spec: GenSpec, persist: bool = True, reset: bool = True) -> dict:
     """Generate a dataset and (optionally) load it into Postgres.
 
-    Returns a summary dict with generated counts (and DB counts if persisted).
+    ``reset`` (default) truncates the domain tables first so re-seeding is
+    idempotent. Returns a summary dict with generated counts (and DB counts if
+    persisted).
     """
     log.info("Generating dataset: %s employees, %s projects (seed=%s, use_llm=%s)",
              spec.num_employees, spec.num_projects, spec.seed, spec.use_llm)
@@ -34,6 +36,7 @@ def run(spec: GenSpec, persist: bool = True) -> dict:
         "persisted": False,
     }
     if persist:
-        summary["counts"] = loader.load(dataset, emp_emb, brief_emb)
+        summary["counts"] = loader.load(dataset, emp_emb, brief_emb, reset=reset)
         summary["persisted"] = True
+        summary["reset"] = reset
     return summary

@@ -11,3 +11,14 @@ datasources:
     type: jaeger
     access: proxy
     url: http://epaa-jaeger:16686
+
+  # Postgres datasource for the paper's evaluation metrics (read from agent_runs).
+  - name: EPAA-Postgres
+    type: postgres
+    url: epaa-postgres:5432
+    user: epaa
+    jsonData:
+      database: epaa
+      sslmode: disable
+    secureJsonData:
+      password: epaa_local   # local dev default; override for shared/AWS

@@ -1,0 +1,35 @@
+[
+  {
+    "id": "944f25b8-56e9-4514-aa90-8d7f231fb2a6",
+    "full_name": "Chris Curtis",
+    "title": "QA Engineer",
+    "seniority": "senior",
+    "years_experience": 7,
+    "performance_score": 88.4,
+    "availability_state": "available",
+    "capacity_hours_per_week": 40,
+    "profile_text": "Chris Curtis is a senior QA Engineer with 7 years of experience. Core strengths: Java (L4), AWS (L3), FastAPI (L3). Recent performance rating 88.4/100. Currently available with ~40h/week capacity.",
+    "skills": [
+      { "name": "Java", "proficiency": 4, "years": 5 },
+      { "name": "AWS", "proficiency": 3, "years": 3 },
+      { "name": "FastAPI", "proficiency": 3, "years": 2 }
+    ],
+    "profile_embedding": "vector(1024) — omitted"
+  },
+  {
+    "id": "fffd5d87-7655-457b-91bb-e8fc20a6a761",
+    "full_name": "Joshua Diaz",
+    "title": "ML Engineer",
+    "seniority": "junior",
+    "years_experience": 2,
+    "performance_score": 71.0,
+    "availability_state": "unavailable",
+    "capacity_hours_per_week": 40,
+    "profile_text": "Joshua Diaz is a junior ML Engineer with 2 years of experience. Core strengths: PyTorch (L3), LLMs (L2), Embeddings (L2). Recent performance rating 71.0/100. Currently unavailable.",
+    "skills": [
+      { "name": "PyTorch", "proficiency": 3, "years": 2 },
+      { "name": "LLMs", "proficiency": 2, "years": 1 }
+    ],
+    "profile_embedding": "vector(1024) — omitted"
+  }
+]
