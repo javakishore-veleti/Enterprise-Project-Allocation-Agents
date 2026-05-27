@@ -2,6 +2,7 @@
 # services (agents, datalake, the 6 Spring services) are added per app on top of
 # this foundation.
 variable "name_prefix" { type = string }
+variable "vpc_id" { type = string }
 variable "bedrock_invoke_policy_arn" {
   type    = string
   default = null
@@ -9,6 +10,26 @@ variable "bedrock_invoke_policy_arn" {
 variable "tags" {
   type    = map(string)
   default = {}
+}
+
+resource "aws_security_group" "service" {
+  name        = "${var.name_prefix}-ecs-svc-sg"
+  description = "EPAA ECS services"
+  vpc_id      = var.vpc_id
+  ingress {
+    description = "intra-VPC service traffic"
+    from_port   = 0
+    to_port     = 65535
+    protocol    = "tcp"
+    self        = true
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  tags = var.tags
 }
 
 resource "aws_ecs_cluster" "this" {
@@ -64,3 +85,4 @@ output "cluster_arn" { value = aws_ecs_cluster.this.arn }
 output "log_group_name" { value = aws_cloudwatch_log_group.this.name }
 output "execution_role_arn" { value = aws_iam_role.execution.arn }
 output "task_role_arn" { value = aws_iam_role.task.arn }
+output "service_security_group_id" { value = aws_security_group.service.id }

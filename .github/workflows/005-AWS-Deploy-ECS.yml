@@ -6,6 +6,6 @@ jobs:
     uses: ./.github/workflows/aws-terraform.yml
     with:
       action: apply
-      targets: module.vpc module.bedrock module.ecs
+      targets: module.vpc module.bedrock module.rds module.ecs module.svc_agents module.svc_datalake module.svc_gateway
       label: ECS
     secrets: inherit

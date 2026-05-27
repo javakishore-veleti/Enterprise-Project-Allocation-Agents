@@ -6,6 +6,6 @@ jobs:
     uses: ./.github/workflows/aws-terraform.yml
     with:
       action: destroy
-      targets: module.ecs
+      targets: module.svc_agents module.svc_datalake module.svc_gateway module.ecs
       label: ECS
     secrets: inherit

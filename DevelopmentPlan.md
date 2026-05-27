@@ -390,11 +390,11 @@ Legend: `[ ]` pending · `[~]` in progress · `[x]` complete · `[-]` deferred
 | 5.4 | Data Management: per-type searchable Airflow-workflow dropdown (p-select, from Datalake API) | [x] |
 | 5.5 | Workflow → Initiate Execution: criteria form → POST /datalake/synthetic/generate | [x] |
 | 5.6 | Workflow → History: PrimeNG lazy p-table (15/page) + searchable (status/run-id) | [x] |
-| 5.7 | Admin: Employees CRUD page | [ ] |
-| 5.8 | Admin: Projects + Briefs page | [ ] |
-| 5.9 | Admin: Allocations page (trigger + result view) | [ ] |
-| 5.10 | Admin: **Agent Monitor** — live trace of 6 agents (SSE/WebSocket) | [ ] |
-| 5.11 | Admin: Reports page (paper's 4 metrics + LLM rationale) | [ ] |
+| 5.7 | Admin: Employees CRUD page (lazy table + create/edit/delete) | [x] |
+| 5.8 | Admin: Projects list page (paginated/searchable) | [x] |
+| 5.9 | Admin: Agent Monitor triggers allocation (result view) | [x] |
+| 5.10 | Admin: **Agent Monitor** — 6-step agent_runs trace (poll; SSE/WS later) | [x] |
+| 5.11 | Admin: Reports page (expandable per-row metrics) | [x] |
 | 5.12 | `Portals/projects-portal` — Angular 18 + PrimeNG (Slate+Indigo). Builds clean. | [x] |
 | 5.13 | Customer: Submit Brief page → POST /api/projects | [x] |
 | 5.14 | Customer: My Projects + status (lazy table) | [x] |
@@ -442,8 +442,8 @@ Legend: `[ ]` pending · `[~]` in progress · `[x]` complete · `[-]` deferred
 | 7.13 | `006-AWS-Deploy-Cognito.yml` + Destroy | [x] |
 | 7.14 | `007-AWS-Deploy-CloudFront.yml` + Destroy | [x] |
 | 7.15 | Reusable `aws-terraform.yml` (manual-only callers; AWS keys from GitHub Secrets); secrets documented | [x] |
-| 7.16 | ECS task definitions/services per app (agents, datalake, 6 Spring) on the cluster | [ ] |
-| 7.17 | Apply to a real AWS account (needs creds + bootstrap) | [ ] |
+| 7.16 | `ecs-service` module (Fargate task def + service) + ecs SG; instances for agents/datalake/gateway. validate clean | [x] |
+| 7.17 | Apply to a real AWS account (needs creds + bootstrap) — **blocked: no AWS access here** | [ ] |
 
 ### M8 — CI / Quality (Category: CI/CD)
 
