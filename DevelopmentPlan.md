@@ -455,15 +455,19 @@ Legend: `[ ]` pending · `[~]` in progress · `[x]` complete · `[-]` deferred
 | 8.4 | Dependabot / Renovate | [-] |
 | 8.5 | Security scan (Snyk or `gh codeql`) | [-] |
 
-### M9 — Alternate Framework Adapters (Category: Learning Tracks — deferred)
+### M9 — Alternate Framework Adapters (Category: Learning Tracks)
+
+> Pluggable LLM backends behind one `complete()` interface (`providers/llm.py`),
+> switchable via `LLM_PROVIDER`. Offline tests in `tests/test_providers.py`. See
+> [docs/adapters.md](docs/adapters.md).
 
 | # | Task | Status |
 |---|------|--------|
-| 9.1 | LangChain / LangGraph adapter for orchestrator | [-] |
-| 9.2 | OpenAI Agents SDK adapter | [-] |
-| 9.3 | Spring AI alternate path (single-language Java agent demo) | [-] |
-| 9.4 | HuggingFace local model adapter (Ollama / Transformers) | [-] |
-| 9.5 | SageMaker-hosted HF model endpoint as Bedrock alternate | [-] |
+| 9.1 | LangChain adapter (`langchain-aws` ChatBedrockConverse) | [x] |
+| 9.2 | OpenAI SDK adapter (`openai`, incl. OpenAI-compatible endpoints) | [x] |
+| 9.3 | Spring AI alternate path (Java) — documented design in docs/adapters.md | [~] |
+| 9.4 | HuggingFace local model adapter via Ollama (`ollama` backend) | [x] |
+| 9.5 | SageMaker-hosted model endpoint — Terraform module + documented backend (needs AWS) | [~] |
 
 ### M10 — Documentation & Demo
 

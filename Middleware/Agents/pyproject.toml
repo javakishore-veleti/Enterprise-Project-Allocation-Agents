@@ -20,9 +20,11 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# Strands is the primary agent framework; optional so the package installs and
-# the deterministic/offline path runs without network. Install for real LLM use.
+# Pluggable agent frameworks — all optional so the package installs and the
+# deterministic/offline path runs without network. Install per backend you use.
 strands = ["strands-agents>=0.1"]
+langchain = ["langchain-aws>=0.2", "langchain-core>=0.3"]
+openai = ["openai>=1.40"]
 dev = ["pytest>=8.0", "ruff>=0.6"]
 
 [project.scripts]

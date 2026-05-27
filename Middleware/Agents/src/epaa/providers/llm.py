@@ -1,8 +1,18 @@
-"""LLM access for the reasoning agents.
+"""LLM access for the reasoning agents — pluggable across frameworks.
 
-Resolution order (LLM_PROVIDER=auto): Strands Agents → Bedrock (boto3) → unavailable.
-Callers treat ``LLMUnavailable`` as "use the deterministic heuristic instead", so
-the whole pipeline runs offline with no AWS and no Strands installed.
+One interface (`complete`) over multiple backends so the same agents can run on
+different stacks (the user's "exposure across frameworks" goal):
+
+    LLM_PROVIDER = auto      # try strands → bedrock, else unavailable
+                 | strands   # Strands Agents + Bedrock
+                 | bedrock   # Bedrock via boto3
+                 | langchain # LangChain (langchain-aws ChatBedrockConverse)
+                 | openai    # OpenAI SDK (or OpenAI-compatible endpoint)
+                 | ollama    # local HuggingFace/GGUF models via Ollama
+                 | heuristic # no LLM — callers use their deterministic fallback
+
+Every backend import is guarded; any failure raises ``LLMUnavailable`` and the
+caller falls back to heuristics, so the pipeline always runs offline.
 """
 from __future__ import annotations
 
@@ -43,19 +53,76 @@ def _complete_bedrock(system: str, prompt: str) -> str:
     return json.loads(resp["body"].read())["content"][0]["text"].strip()
 
 
+def _complete_langchain(system: str, prompt: str) -> str:
+    from langchain_aws import ChatBedrockConverse
+    from langchain_core.messages import HumanMessage, SystemMessage
+
+    s = get_settings()
+    chat = ChatBedrockConverse(model=s.bedrock_model_id, region_name=s.aws_region)
+    resp = chat.invoke([SystemMessage(content=system), HumanMessage(content=prompt)])
+    return str(resp.content).strip()
+
+
+def _complete_openai(system: str, prompt: str) -> str:
+    from openai import OpenAI
+
+    s = get_settings()
+    client = OpenAI(base_url=s.openai_base_url) if s.openai_base_url else OpenAI()
+    resp = client.chat.completions.create(
+        model=s.openai_model,
+        messages=[{"role": "system", "content": system}, {"role": "user", "content": prompt}],
+    )
+    return resp.choices[0].message.content.strip()
+
+
+def _complete_ollama(system: str, prompt: str) -> str:
+    import httpx
+
+    s = get_settings()
+    r = httpx.post(
+        f"{s.ollama_base_url}/api/chat",
+        json={
+            "model": s.ollama_model,
+            "stream": False,
+            "messages": [
+                {"role": "system", "content": system},
+                {"role": "user", "content": prompt},
+            ],
+        },
+        timeout=60,
+    )
+    r.raise_for_status()
+    return r.json()["message"]["content"].strip()
+
+
+_BACKENDS = {
+    "strands": _complete_strands,
+    "bedrock": _complete_bedrock,
+    "langchain": _complete_langchain,
+    "openai": _complete_openai,
+    "ollama": _complete_ollama,
+}
+
+# Resolution order per configured provider.
+_ORDER = {
+    "auto": ("strands", "bedrock"),
+    "strands": ("strands",),
+    "bedrock": ("bedrock",),
+    "langchain": ("langchain",),
+    "openai": ("openai",),
+    "ollama": ("ollama",),
+    "heuristic": (),
+}
+
+
 def complete(system: str, prompt: str) -> str:
     """Return an LLM completion or raise LLMUnavailable."""
     provider = get_settings().llm_provider.lower()
-    order = {
-        "auto": ("strands", "bedrock"),
-        "strands": ("strands",),
-        "bedrock": ("bedrock",),
-        "heuristic": (),
-    }.get(provider, ("strands", "bedrock"))
+    order = _ORDER.get(provider, ("strands", "bedrock"))
 
     for backend in order:
         try:
-            return _complete_strands(system, prompt) if backend == "strands" else _complete_bedrock(system, prompt)
+            return _BACKENDS[backend](system, prompt)
         except Exception as exc:  # noqa: BLE001 — try next backend / fall back
             log.warning("LLM backend '%s' unavailable: %s", backend, exc)
     raise LLMUnavailable(f"no LLM backend available for provider='{provider}'")
