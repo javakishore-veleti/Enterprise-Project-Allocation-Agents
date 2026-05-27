@@ -1,0 +1,11 @@
+name: 004 - AWS Deploy - SageMaker
+on:
+  workflow_dispatch:
+jobs:
+  deploy:
+    uses: ./.github/workflows/aws-terraform.yml
+    with:
+      action: apply
+      targets: module.vpc module.bedrock module.sagemaker
+      label: SageMaker
+    secrets: inherit

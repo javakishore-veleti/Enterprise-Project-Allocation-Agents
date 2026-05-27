@@ -1,0 +1,11 @@
+name: 001 - AWS Deploy - VPC
+on:
+  workflow_dispatch:
+jobs:
+  deploy:
+    uses: ./.github/workflows/aws-terraform.yml
+    with:
+      action: apply
+      targets: module.vpc
+      label: VPC
+    secrets: inherit

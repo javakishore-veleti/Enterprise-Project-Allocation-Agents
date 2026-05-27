@@ -1,0 +1,11 @@
+name: 005 - AWS Destroy - ECS
+on:
+  workflow_dispatch:
+jobs:
+  destroy:
+    uses: ./.github/workflows/aws-terraform.yml
+    with:
+      action: destroy
+      targets: module.ecs
+      label: ECS
+    secrets: inherit

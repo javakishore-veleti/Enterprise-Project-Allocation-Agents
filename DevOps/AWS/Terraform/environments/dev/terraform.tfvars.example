@@ -1,0 +1,4 @@
+# Copy to terraform.tfvars (git-ignored) or pass via TF_VAR_* in CI.
+region      = "us-east-1"
+name_prefix = "epaa-dev"
+db_password = "set-a-strong-password"

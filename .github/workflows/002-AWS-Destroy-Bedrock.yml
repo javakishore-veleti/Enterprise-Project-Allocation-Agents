@@ -1,0 +1,11 @@
+name: 002 - AWS Destroy - Bedrock
+on:
+  workflow_dispatch:
+jobs:
+  destroy:
+    uses: ./.github/workflows/aws-terraform.yml
+    with:
+      action: destroy
+      targets: module.bedrock
+      label: Bedrock
+    secrets: inherit

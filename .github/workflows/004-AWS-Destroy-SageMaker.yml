@@ -1,0 +1,11 @@
+name: 004 - AWS Destroy - SageMaker
+on:
+  workflow_dispatch:
+jobs:
+  destroy:
+    uses: ./.github/workflows/aws-terraform.yml
+    with:
+      action: destroy
+      targets: module.sagemaker
+      label: SageMaker
+    secrets: inherit

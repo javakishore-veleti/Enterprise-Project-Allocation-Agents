@@ -1,0 +1,11 @@
+name: 006 - AWS Deploy - Cognito
+on:
+  workflow_dispatch:
+jobs:
+  deploy:
+    uses: ./.github/workflows/aws-terraform.yml
+    with:
+      action: apply
+      targets: module.cognito
+      label: Cognito
+    secrets: inherit

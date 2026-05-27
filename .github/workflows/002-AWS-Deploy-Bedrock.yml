@@ -1,0 +1,11 @@
+name: 002 - AWS Deploy - Bedrock
+on:
+  workflow_dispatch:
+jobs:
+  deploy:
+    uses: ./.github/workflows/aws-terraform.yml
+    with:
+      action: apply
+      targets: module.bedrock
+      label: Bedrock
+    secrets: inherit

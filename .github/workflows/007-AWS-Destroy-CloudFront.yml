@@ -1,0 +1,11 @@
+name: 007 - AWS Destroy - CloudFront
+on:
+  workflow_dispatch:
+jobs:
+  destroy:
+    uses: ./.github/workflows/aws-terraform.yml
+    with:
+      action: destroy
+      targets: module.cloudfront_admin module.cloudfront_projects
+      label: CloudFront
+    secrets: inherit

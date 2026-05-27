@@ -1,0 +1,11 @@
+name: 003 - AWS Destroy - RDS
+on:
+  workflow_dispatch:
+jobs:
+  destroy:
+    uses: ./.github/workflows/aws-terraform.yml
+    with:
+      action: destroy
+      targets: module.rds
+      label: RDS
+    secrets: inherit

@@ -1,0 +1,11 @@
+name: 007 - AWS Deploy - CloudFront
+on:
+  workflow_dispatch:
+jobs:
+  deploy:
+    uses: ./.github/workflows/aws-terraform.yml
+    with:
+      action: apply
+      targets: module.cloudfront_admin module.cloudfront_projects
+      label: CloudFront
+    secrets: inherit
