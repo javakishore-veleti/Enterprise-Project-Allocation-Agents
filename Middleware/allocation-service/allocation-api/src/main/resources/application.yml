@@ -1,0 +1,33 @@
+# allocation-service — H2 by default; delegates allocation runs to the Agents service.
+spring:
+  application:
+    name: allocation-service
+  config:
+    import: "optional:classpath:application-local-secrets.yaml"
+  datasource:
+    url: jdbc:h2:mem:epaa_allocation;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+server:
+  port: ${ALLOCATION_SERVICE_PORT:8083}
+
+epaa:
+  agents:
+    base-url: ${AGENTS_BASE_URL:http://localhost:8001}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

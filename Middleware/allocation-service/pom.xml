@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.3.5</version>
+        <relativePath/>
+    </parent>
+    <groupId>com.javakishore.epaa</groupId>
+    <artifactId>allocation-service</artifactId>
+    <version>0.1.0</version>
+    <packaging>pom</packaging>
+    <name>allocation-service</name>
+    <description>EPAA allocation microservice (triggers the Agents pipeline)</description>
+
+    <modules>
+        <module>allocation-common</module>
+        <module>allocation-utils</module>
+        <module>allocation-entities</module>
+        <module>allocation-dao</module>
+        <module>allocation-services</module>
+        <module>allocation-api</module>
+    </modules>
+
+    <properties>
+        <java.version>21</java.version>
+        <springdoc.version>2.6.0</springdoc.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency><groupId>com.javakishore.epaa</groupId><artifactId>allocation-common</artifactId><version>${project.version}</version></dependency>
+            <dependency><groupId>com.javakishore.epaa</groupId><artifactId>allocation-utils</artifactId><version>${project.version}</version></dependency>
+            <dependency><groupId>com.javakishore.epaa</groupId><artifactId>allocation-entities</artifactId><version>${project.version}</version></dependency>
+            <dependency><groupId>com.javakishore.epaa</groupId><artifactId>allocation-dao</artifactId><version>${project.version}</version></dependency>
+            <dependency><groupId>com.javakishore.epaa</groupId><artifactId>allocation-services</artifactId><version>${project.version}</version></dependency>
+            <dependency><groupId>org.springdoc</groupId><artifactId>springdoc-openapi-starter-webmvc-ui</artifactId><version>${springdoc.version}</version></dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>
