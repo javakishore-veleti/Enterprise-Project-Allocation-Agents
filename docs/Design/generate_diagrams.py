@@ -70,12 +70,12 @@ overall_nodes = [
     node("o_alloc", "allocation-service", 360, 250, 150, 40, SVC),
     node("o_notif", "notification-service", 40, 300, 150, 40, SVC),
     node("o_rep", "reporting-service", 200, 300, 150, 40, SVC),
-    node("o_agents", "Agents (FastAPI)&lt;br&gt;6 MCP-AI agents · Strands+Bedrock", 600, 240, 240, 60, AGENT),
-    node("o_datalake", "Datalake (FastAPI)&lt;br&gt;SyntheticData + Airflow DAG", 600, 150, 240, 50, OUTPUT),
-    node("o_pg", "Postgres + pgvector&lt;br&gt;(shared schema)", 620, 360, 200, 70, STORE),
-    node("o_obs", "Observability&lt;br&gt;Jaeger · Prometheus · Grafana · Kibana", 880, 360, 200, 70, INPUT),
+    node("o_agents", "Agents (FastAPI)<br>6 MCP-AI agents · Strands+Bedrock", 600, 240, 240, 60, AGENT),
+    node("o_datalake", "Datalake (FastAPI)<br>SyntheticData + Airflow DAG", 600, 150, 240, 50, OUTPUT),
+    node("o_pg", "Postgres + pgvector<br>(shared schema)", 620, 360, 200, 70, STORE),
+    node("o_obs", "Observability<br>Jaeger · Prometheus · Grafana · Kibana", 880, 360, 200, 70, INPUT),
     node("o_airflow", "Airflow (LocalExecutor)", 880, 150, 180, 40, INPUT),
-    node("o_mgr", "Project Manager&lt;br&gt;(Admin)", 560, 10, 30, 60, ACTOR),
+    node("o_mgr", "Project Manager<br>(Admin)", 560, 10, 30, 60, ACTOR),
     node("o_client", "Customer", 660, 10, 30, 60, ACTOR),
 ]
 overall_edges = [
@@ -94,7 +94,7 @@ overall_edges = [
 # ---- Tab 2: Agent pipeline ------------------------------------------------
 pipe_nodes = [
     t("p_title", "Agent Pipeline (Orchestrator)", 40, 10),
-    node("p_brief", "Project Brief&lt;br&gt;(unstructured text)", 40, 80, 170, 50, INPUT),
+    node("p_brief", "Project Brief<br>(unstructured text)", 40, 80, 170, 50, INPUT),
     node("p_a1", "1. Requirement Parsing", 240, 80, 180, 40, AGENT),
     node("p_a2", "2. Skill Matching", 240, 140, 180, 40, AGENT),
     node("p_a3", "3. Availability Checker", 240, 200, 180, 40, AGENT),
@@ -104,7 +104,7 @@ pipe_nodes = [
     node("p_alloc", "allocations", 470, 260, 140, 40, OUTPUT),
     node("p_notif", "notifications", 470, 320, 140, 40, OUTPUT),
     node("p_report", "report + metrics", 470, 380, 140, 40, OUTPUT),
-    node("p_trace", "agent_runs / agent_steps&lt;br&gt;(persisted trace)", 470, 80, 200, 60, STORE),
+    node("p_trace", "agent_runs / agent_steps<br>(persisted trace)", 470, 80, 200, 60, STORE),
     node("p_pg", "Postgres + pgvector", 700, 200, 180, 50, STORE),
 ]
 pipe_edges = [
@@ -143,23 +143,23 @@ def agent_tab(name, inputs, agent_label, logic, outputs, extras):
 
 # ---- Tab: Business Architecture (personas + value stream) ----------------
 biz_nodes = [
-    t("b_title", "Business Architecture (Personas &amp; Value Stream)", 40, 10),
+    t("b_title", "Business Architecture (Personas & Value Stream)", 40, 10),
     # personas (actors)
-    node("b_client", "Customer&lt;br&gt;(submits needs)", 60, 70, 30, 60, ACTOR),
-    node("b_mgr", "Project / Resource&lt;br&gt;Manager", 300, 70, 30, 60, ACTOR),
-    node("b_emp", "Employee /&lt;br&gt;Assignee", 560, 70, 30, 60, ACTOR),
-    node("b_exec", "Executive /&lt;br&gt;Management", 820, 70, 30, 60, ACTOR),
-    node("b_admin", "Platform /&lt;br&gt;Data Admin", 980, 70, 30, 60, ACTOR),
+    node("b_client", "Customer<br>(submits needs)", 60, 70, 30, 60, ACTOR),
+    node("b_mgr", "Project / Resource<br>Manager", 300, 70, 30, 60, ACTOR),
+    node("b_emp", "Employee /<br>Assignee", 560, 70, 30, 60, ACTOR),
+    node("b_exec", "Executive /<br>Management", 820, 70, 30, 60, ACTOR),
+    node("b_admin", "Platform /<br>Data Admin", 980, 70, 30, 60, ACTOR),
     # value stream capabilities
-    node("b_c1", "Demand Intake&lt;br&gt;(project brief)", 40, 230, 150, 60, CAP),
-    node("b_c2", "Requirement&lt;br&gt;Understanding (AI)", 220, 230, 150, 60, AGENT),
-    node("b_c3", "Skill &amp; Availability&lt;br&gt;Matching (AI)", 400, 230, 150, 60, AGENT),
-    node("b_c4", "Assignment &amp;&lt;br&gt;Approval", 580, 230, 150, 60, CAP),
-    node("b_c5", "Communication&lt;br&gt;(notify staff)", 760, 230, 150, 60, CAP),
-    node("b_c6", "Reporting &amp;&lt;br&gt;Oversight", 940, 230, 150, 60, CAP),
-    node("b_dm", "Data &amp; Workflow&lt;br&gt;Management", 940, 360, 150, 50, CAP),
-    node("b_note", "Capabilities 2–3 are fully automated by the LLM agents&lt;br&gt;"
-                   "— minimal human intervention (the paper's goal). The manager&lt;br&gt;"
+    node("b_c1", "Demand Intake<br>(project brief)", 40, 230, 150, 60, CAP),
+    node("b_c2", "Requirement<br>Understanding (AI)", 220, 230, 150, 60, AGENT),
+    node("b_c3", "Skill & Availability<br>Matching (AI)", 400, 230, 150, 60, AGENT),
+    node("b_c4", "Assignment &<br>Approval", 580, 230, 150, 60, CAP),
+    node("b_c5", "Communication<br>(notify staff)", 760, 230, 150, 60, CAP),
+    node("b_c6", "Reporting &<br>Oversight", 940, 230, 150, 60, CAP),
+    node("b_dm", "Data & Workflow<br>Management", 940, 360, 150, 50, CAP),
+    node("b_note", "Capabilities 2–3 are fully automated by the LLM agents<br>"
+                   "— minimal human intervention (the paper's goal). The manager<br>"
                    "reviews/approves; staff are notified; management gets reports.",
          40, 380, 470, 90, NOTE),
 ]
@@ -176,21 +176,21 @@ biz_edges = [
 # ---- Tab: Agent Triggers (manual vs automatic) ---------------------------
 trig_nodes = [
     t("g_title", "Agent Triggers — Manual vs Automatic", 40, 10),
-    node("g_mgr", "Project&lt;br&gt;Manager", 40, 80, 30, 60, ACTOR),
-    node("g_monitor", "Admin Portal: Agent Monitor&lt;br&gt;'Run allocation' (MANUAL)", 150, 75, 240, 55, UI),
-    node("g_alloc", "allocation-service&lt;br&gt;POST /api/allocations/run", 440, 78, 200, 50, SVC),
-    node("g_agents", "Agents pipeline&lt;br&gt;(synchronous, on-demand)", 700, 75, 220, 55, AGENT),
+    node("g_mgr", "Project<br>Manager", 40, 80, 30, 60, ACTOR),
+    node("g_monitor", "Admin Portal: Agent Monitor<br>'Run allocation' (MANUAL)", 150, 75, 240, 55, UI),
+    node("g_alloc", "allocation-service<br>POST /api/allocations/run", 440, 78, 200, 50, SVC),
+    node("g_agents", "Agents pipeline<br>(synchronous, on-demand)", 700, 75, 220, 55, AGENT),
 
-    node("g_admin", "Platform /&lt;br&gt;Data Admin", 40, 230, 30, 60, ACTOR),
-    node("g_dm", "Admin Portal: Data Management&lt;br&gt;'Initiate Execution' (MANUAL)", 150, 225, 240, 55, UI),
-    node("g_dl", "Datalake API&lt;br&gt;POST /synthetic/generate", 440, 228, 200, 50, SVC),
-    node("g_airflow", "Airflow DAG&lt;br&gt;(ASYNC execution)", 700, 228, 200, 50, TRIGGER),
+    node("g_admin", "Platform /<br>Data Admin", 40, 230, 30, 60, ACTOR),
+    node("g_dm", "Admin Portal: Data Management<br>'Initiate Execution' (MANUAL)", 150, 225, 240, 55, UI),
+    node("g_dl", "Datalake API<br>POST /synthetic/generate", 440, 228, 200, 50, SVC),
+    node("g_airflow", "Airflow DAG<br>(ASYNC execution)", 700, 228, 200, 50, TRIGGER),
     node("g_pg", "Postgres + pgvector", 700, 330, 200, 45, STORE),
 
-    node("g_note", "MANUAL: a manager/admin triggers from the portal (or any API client).&lt;br&gt;"
-                   "ASYNC (dashed): the Datalake API returns immediately and the Airflow DAG&lt;br&gt;"
-                   "generates + loads data in the background.&lt;br&gt;"
-                   "The 6-agent allocation runs synchronously per request — no scheduled auto-runs&lt;br&gt;"
+    node("g_note", "MANUAL: a manager/admin triggers from the portal (or any API client).<br>"
+                   "ASYNC (dashed): the Datalake API returns immediately and the Airflow DAG<br>"
+                   "generates + loads data in the background.<br>"
+                   "The 6-agent allocation runs synchronously per request — no scheduled auto-runs<br>"
                    "yet (future: event-driven on brief submission).",
          40, 420, 620, 110, NOTE),
 ]
@@ -213,27 +213,27 @@ tabs = [
 
 tabs.append(agent_tab(
     "Agent 1: Requirement Parsing",
-    [("project_briefs.brief_text&lt;br&gt;(free text)", INPUT)],
-    "Requirement&lt;br&gt;Parsing Agent",
-    "LLM → strict JSON;&lt;br&gt;heuristic fallback:&lt;br&gt;taxonomy match + regex",
-    [("parsed_requirements&lt;br&gt;{skills, priority, complexity,&lt;br&gt;duration, headcount}", OUTPUT)],
-    [("LLM provider&lt;br&gt;(Strands/Bedrock)", LLM)],
+    [("project_briefs.brief_text<br>(free text)", INPUT)],
+    "Requirement<br>Parsing Agent",
+    "LLM → strict JSON;<br>heuristic fallback:<br>taxonomy match + regex",
+    [("parsed_requirements<br>{skills, priority, complexity,<br>duration, headcount}", OUTPUT)],
+    [("LLM provider<br>(Strands/Bedrock)", LLM)],
 ))
 tabs.append(agent_tab(
     "Agent 2: Skill Matching",
     [("parsed required_skills", INPUT),
      ("brief.requirements_embedding", INPUT)],
-    "Skill&lt;br&gt;Matching Agent",
-    "pgvector cosine distance&lt;br&gt;+ skill overlap&lt;br&gt;blend → relevance",
-    [("ranked candidates&lt;br&gt;[relevance score]", OUTPUT)],
-    [("employees.profile_embedding&lt;br&gt;(pgvector)", STORE)],
+    "Skill<br>Matching Agent",
+    "pgvector cosine distance<br>+ skill overlap<br>blend → relevance",
+    [("ranked candidates<br>[relevance score]", OUTPUT)],
+    [("employees.profile_embedding<br>(pgvector)", STORE)],
 ))
 tabs.append(agent_tab(
     "Agent 3: Availability Checker",
     [("candidates", INPUT),
      ("employees.availability_state", INPUT)],
-    "Availability&lt;br&gt;Checker Agent",
-    "DB-only;&lt;br&gt;drop 'unavailable';&lt;br&gt;set availability_factor",
+    "Availability<br>Checker Agent",
+    "DB-only;<br>drop 'unavailable';<br>set availability_factor",
     [("available candidates", OUTPUT),
      ("metric: conflicts_avoided", OUTPUT)],
     [],
@@ -242,26 +242,26 @@ tabs.append(agent_tab(
     "Agent 4: Assignment",
     [("available candidates", INPUT),
      ("project priority weight", INPUT)],
-    "Assignment&lt;br&gt;Agent",
-    "score = w_rel·relevance&lt;br&gt;+ w_pri·priority&lt;br&gt;+ w_avail·availability;&lt;br&gt;rank → top headcount",
-    [("allocations (persisted)&lt;br&gt;+ rationale", OUTPUT)],
+    "Assignment<br>Agent",
+    "score = w_rel·relevance<br>+ w_pri·priority<br>+ w_avail·availability;<br>rank → top headcount",
+    [("allocations (persisted)<br>+ rationale", OUTPUT)],
     [],
 ))
 tabs.append(agent_tab(
     "Agent 5: Communication",
     [("assignments", INPUT)],
-    "Communication&lt;br&gt;Agent",
-    "template subject/body;&lt;br&gt;queue per assignee",
-    [("notifications rows&lt;br&gt;(channel: log)", OUTPUT)],
+    "Communication<br>Agent",
+    "template subject/body;<br>queue per assignee",
+    [("notifications rows<br>(channel: log)", OUTPUT)],
     [],
 ))
 tabs.append(agent_tab(
     "Agent 6: Reporting",
     [("run context + metrics", INPUT)],
-    "Reporting&lt;br&gt;Agent",
-    "LLM summary;&lt;br&gt;template fallback",
-    [("reports row&lt;br&gt;summary + metrics_json", OUTPUT)],
-    [("LLM provider&lt;br&gt;(Strands/Bedrock)", LLM)],
+    "Reporting<br>Agent",
+    "LLM summary;<br>template fallback",
+    [("reports row<br>summary + metrics_json", OUTPUT)],
+    [("LLM provider<br>(Strands/Bedrock)", LLM)],
 ))
 
 xml = '<mxfile host="app.diagrams.net" type="device">' + "".join(tabs) + "</mxfile>"
