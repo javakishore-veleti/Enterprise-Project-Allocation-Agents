@@ -58,6 +58,32 @@ export interface AgentStep {
   output?: Record<string, unknown>;
 }
 
+/** Snake_case result from the Python agents service (HITL + LangGraph paths). */
+export interface AgentAllocationResult {
+  run_id: string;
+  project_id: string;
+  status: string; // success | awaiting_approval | rejected | failed
+  allocation_time_ms?: number;
+  orchestrator?: string;
+  assignments?: { full_name: string; rank: number; final_score: number }[];
+  report?: string | null;
+  metrics?: Record<string, unknown>;
+}
+
+/** One Server-Sent Event from GET /agents/allocations/stream/{projectId}. */
+export interface AllocationStreamEvent {
+  event: 'start' | 'step' | 'done' | 'error';
+  run_id?: string;
+  project_id?: string;
+  orchestrator?: string;
+  sequence?: number;
+  agent?: string;
+  output?: Record<string, unknown>;
+  elapsed_ms?: number;
+  summary?: AgentAllocationResult;
+  detail?: string;
+}
+
 export interface AgentRun {
   run_id: string;
   project_id: string;

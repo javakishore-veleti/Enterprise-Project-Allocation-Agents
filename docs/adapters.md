@@ -17,6 +17,29 @@ edge**: if the Availability Checker leaves no available candidates, it skips Ass
 + Communication and routes straight to Reporting — something the linear v1 can't express
 as cleanly. Switch with `ORCHESTRATOR=langgraph` (install `pip install '.[langgraph]'`).
 
+### Streaming the live trace (SSE)
+
+`GET /allocations/stream/{project_id}` runs the LangGraph graph and emits one
+Server-Sent Event per agent **as it finishes** — `start` → `step`×N → `done` —
+using `app.stream(stream_mode="updates")`. The DB session stays open for the life
+of the generator (commits when exhausted). The admin portal's **Agent Monitor**
+consumes it with `EventSource` and animates the timeline. Requires the `langgraph`
+extra (emits an `error` event otherwise).
+
+### Human-in-the-loop (HITL) approval
+
+A two-phase variant in `hitl.py`, reusing the same 6 agents:
+
+| Step | Endpoint | Effect |
+|------|----------|--------|
+| 1 | `POST /allocations/run {require_approval:true}` | Runs agents 1-4; Assignment writes **`proposed`** rows (not `assigned`); run parked as **`awaiting_approval`**. |
+| 2a | `POST /allocations/{run_id}/approve` | `proposed` → `assigned`, then Communication + Reporting run; run → `success`. |
+| 2b | `POST /allocations/{run_id}/reject` (`{reason}`) | `proposed` → `rejected`; Reporting records the rejection; run → `rejected`. |
+
+The only HITL-aware agent is the Assignment Agent, which honours
+`ctx.approval_required`. Approve/reject return **409** if the run isn't awaiting a
+decision, **404** if the run/project is unknown.
+
 ## LLM backends — `LLM_PROVIDER`
 
 The agents reason through a single `complete(system, prompt)` interface

@@ -508,7 +508,9 @@ Legend: `[ ]` pending · `[~]` in progress · `[x]` complete · `[-]` deferred
 | 12.3 | `runner.py` dispatch via `ORCHESTRATOR` (custom \| langgraph) + graceful fallback | [x] |
 | 12.4 | `langgraph` optional extra; API/CLI use the dispatcher | [x] |
 | 12.5 | Verified end-to-end against Postgres (assignments + report + trace); ruff + pytest 5/5 | [x] |
-| 12.6 | (future) richer graph: retries, human-in-the-loop approval, checkpointing/streaming | [ ] |
+| 12.6 | Human-in-the-loop approval (`hitl.py`): two-phase run → `awaiting_approval` (proposed) → approve/reject; API `POST /allocations/run {require_approval}`, `/allocations/{run_id}/approve\|reject` | [x] |
+| 12.7 | Streaming live trace: `run_allocation_stream` via LangGraph `.stream(updates)`; SSE `GET /allocations/stream/{project_id}`; Agent Monitor consumes it (EventSource) + approval panel | [x] |
+| 12.8 | (future) graph retries + LangGraph checkpointing for durable resume across restarts | [ ] |
 
 ---
 

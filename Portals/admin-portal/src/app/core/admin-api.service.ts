@@ -3,6 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import {
+  AgentAllocationResult,
   AgentRun,
   AllocationRunResponse,
   Employee,
@@ -46,6 +47,26 @@ export class AdminApiService {
   }
   getAgentRun(runId: string): Observable<AgentRun> {
     return this.http.get<AgentRun>(`${this.base}/agents/agent-runs/${runId}`);
+  }
+
+  // --- Human-in-the-loop (calls the Python agents service directly via /agents/**) ---
+  /** Phase 1: run agents 1-4 and park the run as awaiting_approval (proposed). */
+  runWithApproval(projectId: string): Observable<AgentAllocationResult> {
+    return this.http.post<AgentAllocationResult>(
+      `${this.base}/agents/allocations/run`, { project_id: projectId, require_approval: true });
+  }
+  /** Phase 2 (approve): proposed → assigned, then notify + report. */
+  approveAllocation(runId: string): Observable<AgentAllocationResult> {
+    return this.http.post<AgentAllocationResult>(`${this.base}/agents/allocations/${runId}/approve`, {});
+  }
+  /** Phase 2 (reject): proposed → rejected. */
+  rejectAllocation(runId: string, reason: string): Observable<AgentAllocationResult> {
+    return this.http.post<AgentAllocationResult>(
+      `${this.base}/agents/allocations/${runId}/reject`, { reason });
+  }
+  /** SSE endpoint for the live LangGraph trace (consume with EventSource). */
+  allocationStreamUrl(projectId: string): string {
+    return `${this.base}/agents/allocations/stream/${projectId}`;
   }
 
   // Reports
