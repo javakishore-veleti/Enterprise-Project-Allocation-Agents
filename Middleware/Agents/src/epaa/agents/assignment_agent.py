@@ -31,6 +31,10 @@ class AssignmentAgent(BaseAgent):
         scored.sort(key=lambda c: c["final_score"], reverse=True)
 
         chosen = scored[:headcount]
+        # Human-in-the-loop: when approval is required the rows are written as
+        # "proposed" (a manager approves/rejects before Communication fires).
+        status = "proposed" if ctx.approval_required else "assigned"
+        assigned_at = None if ctx.approval_required else dt.datetime.now(dt.UTC)
         assignments = []
         for rank, c in enumerate(chosen, start=1):
             rationale = (
@@ -41,8 +45,8 @@ class AssignmentAgent(BaseAgent):
             session.add(Allocation(
                 project_id=ctx.project_id, employee_id=c["employee_id"],
                 relevance_score=c["relevance"], priority_weight=pri_w,
-                final_score=c["final_score"], status="assigned",
-                rationale=rationale, assigned_at=dt.datetime.now(dt.UTC),
+                final_score=c["final_score"], status=status,
+                rationale=rationale, assigned_at=assigned_at,
             ))
             assignments.append({**c, "rank": rank, "rationale": rationale})
 

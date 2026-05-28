@@ -6,6 +6,13 @@ from pydantic import BaseModel, Field
 
 class RunAllocationRequest(BaseModel):
     project_id: str = Field(..., description="Project to allocate a team for")
+    require_approval: bool = Field(
+        False, description="If true, run agents 1-4 and park as 'awaiting_approval' "
+                           "(allocations written as 'proposed') until a human approves.")
+
+
+class ApprovalDecisionRequest(BaseModel):
+    reason: str = Field("", description="Optional note recorded with the decision (esp. rejections)")
 
 
 class AssignmentDTO(BaseModel):

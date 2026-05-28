@@ -19,6 +19,7 @@ class PipelineContext:
     notifications: int = 0              # Communication output
     report: dict = field(default_factory=dict)        # Reporting output
     metrics: dict = field(default_factory=dict)
+    approval_required: bool = False     # if set, Assignment writes "proposed" (awaits human approval)
 
 
 class BaseAgent:
