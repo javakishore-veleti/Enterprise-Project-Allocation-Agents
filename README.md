@@ -15,7 +15,10 @@ Free-text project briefs go in; an LLM-driven team of six autonomous agents pars
 - [Tech stack](#tech-stack)
 - [Multi-agent orchestration frameworks](#multi-agent-orchestration-frameworks)
 - [Repository layout](#repository-layout)
-- [Quick start (local)](#quick-start-local)
+- [Prerequisites](#prerequisites)
+- [First time running the application](#first-time-running-the-application)
+- [Daily running](#daily-running)
+- [npm scripts reference](#npm-scripts-reference)
 - [Documentation](#documentation)
 - [Status](#status)
 - [License](#license)
@@ -122,36 +125,83 @@ the popular options as of early 2026 (fuller writeup in
 └── CLAUDE.md                   # session context for AI-assisted work
 ```
 
-## Quick start (local)
+## Prerequisites
 
-> Prerequisites: Docker, Node 20+, Python 3.12, JDK 21. Bedrock (Claude Opus 4.7, `us-east-1`) is
-> needed for the agents and for LLM-generated synthetic text; the Spring services default to **H2**, so
-> Postgres is only required for the agents/embeddings + Datalake.
+The repo is **local-first** — the whole stack runs in Docker, orchestrated from the
+root `package.json`. You need:
+
+- **Docker** + Docker Compose (running)
+- **Node.js 20+** and **npm** (to run the root `package.json` scripts)
+- Bedrock (Claude Opus 4.7, `us-east-1`) is only needed for *live* LLM/embeddings — the
+  agents fall back to an offline heuristic + hash embeddings, and the Spring services
+  default to **H2**, so Postgres is only required for the agents/embeddings + Datalake.
+- Optional for non-Docker dev only: Python 3.12, JDK 21 (the container images build
+  those internally, so you don't need them on the host for `npm start`).
+
+Default ports: `8080` gateway · `4200`/`4201` portals · `5432` Postgres · `8000`
+Datalake · `8001` Agents · `8088` Airflow · `16686` Jaeger · `3000` Grafana · `5050` pgAdmin.
+
+## First time running the application
+
+Run these **once** to bootstrap, then switch to [Daily running](#daily-running):
 
 ```bash
-# 1. Configure environment (the start script also auto-creates .env if missing)
-cp .env.example .env          # then fill in AWS values
+# 1. Configure environment (npm start also auto-creates .env from .env.example if missing)
+cp .env.example .env          # then fill in AWS values if you want live Bedrock
 
-# 2. Bring everything up (infra → airflow → agents → middleware → portals).
-#    secrets:gen runs first (prestart) to materialise application-local-secrets.yaml.
-npm run start
+# 2. Bring the WHOLE stack up: infra → airflow → datalake → agents → middleware → portals.
+#    'prestart' runs secrets:gen first to materialise application-local-secrets.yaml from .env.
+npm start
 
 # 3. Seed synthetic data — triggers the SyntheticDataGen Airflow DAG via the Datalake API
 npm run seed
 
-# 4. Open the portals
+# 4. Confirm health, then open the portals
+npm run status
 #    Admin portal     → http://localhost:4200
 #    Customer portal  → http://localhost:4201
+#    API gateway      → http://localhost:8080
 #    Jaeger UI        → http://localhost:16686
 #    Grafana          → http://localhost:3000
-
-# Stop / check status
-npm run stop
-npm run status
 ```
 
-> Fastest path: `bash DevOps/Local/smoke-test.sh` runs the paper's core flow
+Migrations auto-apply on startup (Liquibase for Spring, Alembic for Python) for both H2
+and Postgres, so the stack is usable as soon as it reports healthy.
+
+## Daily running
+
+Everything is controlled through the root `package.json` — **one command boots all six
+microservices and both portals** (no need to start anything individually):
+
+```bash
+npm start            # start the FULL stack in docker (all microservices + both portals)
+npm run status       # health of every container + handy local URLs
+npm stop             # stop & tear down the full stack
+```
+
+> Fastest sanity check: `bash DevOps/Local/smoke-test.sh` runs the paper's core flow
 > (Postgres + Datalake + Agents) end-to-end in containers. See [docs/demo.md](docs/demo.md).
+
+## npm scripts reference
+
+All scripts run from the repo root and wrap `DevOps/Local/docker-all-{up,down,status}.sh`.
+Start a single layer when you only need part of the stack:
+
+| Script | Action |
+|--------|--------|
+| `npm start` / `npm stop` | **full stack** up / down (infra → airflow → datalake → agents → middleware → portals) |
+| `npm run status` | container health + local URLs |
+| `npm run seed` | seed synthetic data (POST `/synthetic/generate`) |
+| `npm run secrets:gen` | regenerate `application-local-secrets.yaml` from `.env` |
+| `npm run start:infra` / `stop:infra` | Postgres + observability |
+| `npm run start:postgres` / `stop:postgres` | Postgres + pgvector + pgAdmin |
+| `npm run start:observability` / `stop:observability` | Prometheus + Jaeger + Grafana + Kibana |
+| `npm run start:airflow` / `stop:airflow` | Airflow (Datalake DAG runtime) |
+| `npm run start:datalake` / `stop:datalake` | SyntheticDataAPI (FastAPI) |
+| `npm run start:vectordb` / `stop:vectordb` | Qdrant (optional, alt to pgvector) |
+| `npm run start:agents` / `stop:agents` | Python agents service |
+| `npm run start:middleware` / `stop:middleware` | the 6 Spring Boot services + API gateway |
+| `npm run start:portals` / `stop:portals` | both Angular portals (admin + customer) |
 
 ## Documentation
 
