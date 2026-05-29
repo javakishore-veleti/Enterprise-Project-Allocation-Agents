@@ -234,7 +234,7 @@ and the **apps** (`local:apps:*`) — and you normally drive those directly. `np
 | Script | Action |
 |--------|--------|
 | **Docker backing layer** | |
-| `npm run local:docker:start-all` / `:stop-all` | all backing containers (postgres, observability, airflow, vectordb, datalake, agents) |
+| `npm run local:docker:start-all` / `:stop-all` / `:status-all` | all backing containers (postgres, observability, airflow, vectordb, datalake, agents) |
 | `npm run local:docker:postgres:start` / `:stop` | Postgres + pgvector |
 | `npm run local:docker:observability:start` / `:stop` | Prometheus + Jaeger + Grafana + Kibana |
 | `npm run local:docker:airflow:start` / `:stop` | Airflow (Datalake DAG runtime) |
@@ -242,11 +242,11 @@ and the **apps** (`local:apps:*`) — and you normally drive those directly. `np
 | `npm run local:docker:datalake:start` / `:stop` | SyntheticDataAPI (FastAPI) |
 | `npm run local:docker:agents:start` / `:stop` | Python agents service |
 | **Application layer** | |
-| `npm run local:apps:start-all` / `:stop-all` | all apps — internally runs middleware then portals |
+| `npm run local:apps:start-all` / `:stop-all` / `:status-all` | all apps — internally runs middleware then portals |
 | `npm run local:apps:middleware:start-all` / `:stop-all` | the 6 Spring Boot services + API gateway (runs `secrets:gen` first) |
 | `npm run local:apps:portals:start-all` / `:stop-all` | both Angular portals (admin + customer) |
 | **Utilities & shortcuts** | |
-| `npm run status` | container health + local URLs |
+| `npm run status` (or `local:status`) | container health + local URLs (all layers; per-layer via `local:docker:status-all` / `local:apps:status-all`) |
 | `npm run seed` | headless shortcut to seed synthetic data — same `POST /synthetic/generate` the Admin portal's **Data Management → Initiate Execution** triggers |
 | `npm run secrets:gen` | regenerate `application-local-secrets.yaml` from `.env` |
 | `npm start` / `npm stop` | *optional* all-in-one shortcut — both layers (`local:docker:*` then `local:apps:*`; reversed for stop) |

@@ -3,18 +3,38 @@
 # Show the status of the EPAA local stack: running containers, health, and the
 # handy local URLs.
 #
+# Usage:
+#   docker-all-status.sh [target]
+# Targets: all (default) | docker (backing layer) | apps (middleware + portals)
+#
 set -uo pipefail
 
 NETWORK="epaa-net"
+TARGET="${1:-all}"
+
+# Container-name filters per layer (matches start_docker / start_apps in docker-all-up.sh).
+DOCKER_NAMES=(epaa-postgres epaa-prometheus epaa-jaeger epaa-grafana epaa-elasticsearch
+              epaa-kibana epaa-airflow epaa-datalake-api epaa-agents)
+APPS_NAMES=(epaa-employee-service epaa-project-service epaa-allocation-service
+            epaa-notification-service epaa-reporting-service epaa-api-gateway
+            epaa-admin-portal epaa-projects-portal)
 
 log() { printf '\033[0;36m[epaa]\033[0m %s\n' "$*"; }
 
 command -v docker >/dev/null 2>&1 || { echo "docker not found" >&2; exit 1; }
 
+FILTERS=()
+case "$TARGET" in
+  all)    FILTERS=(--filter "name=epaa-") ;;
+  docker) for n in "${DOCKER_NAMES[@]}"; do FILTERS+=(--filter "name=$n"); done ;;
+  apps)   for n in "${APPS_NAMES[@]}";   do FILTERS+=(--filter "name=$n"); done ;;
+  *) echo "unknown target '$TARGET' (try: all|docker|apps)" >&2; exit 1 ;;
+esac
+
 echo
-log "EPAA containers"
+log "EPAA containers (${TARGET} layer)"
 docker ps -a \
-  --filter "name=epaa-" \
+  "${FILTERS[@]}" \
   --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" \
   || true
 

@@ -18,10 +18,12 @@
     "start": "npm run local:docker:start-all && npm run local:apps:start-all",
     "stop": "npm run local:apps:stop-all && npm run local:docker:stop-all",
     "status": "bash DevOps/Local/docker-all-status.sh",
+    "local:status": "bash DevOps/Local/docker-all-status.sh all",
     "seed": "curl -s -X POST http://localhost:8000/synthetic/generate",
 
     "local:docker:start-all": "bash DevOps/Local/docker-all-up.sh docker",
     "local:docker:stop-all": "bash DevOps/Local/docker-all-down.sh docker",
+    "local:docker:status-all": "bash DevOps/Local/docker-all-status.sh docker",
     "local:docker:postgres:start": "bash DevOps/Local/docker-all-up.sh postgres",
     "local:docker:postgres:stop": "bash DevOps/Local/docker-all-down.sh postgres",
     "local:docker:observability:start": "bash DevOps/Local/docker-all-up.sh observability",
@@ -37,6 +39,7 @@
 
     "local:apps:start-all": "npm run local:apps:middleware:start-all && npm run local:apps:portals:start-all",
     "local:apps:stop-all": "npm run local:apps:portals:stop-all && npm run local:apps:middleware:stop-all",
+    "local:apps:status-all": "bash DevOps/Local/docker-all-status.sh apps",
     "local:apps:middleware:start-all": "npm run secrets:gen && bash DevOps/Local/docker-all-up.sh middleware",
     "local:apps:middleware:stop-all": "bash DevOps/Local/docker-all-down.sh middleware",
     "local:apps:portals:start-all": "bash DevOps/Local/docker-all-up.sh portals",
