@@ -229,9 +229,9 @@ npm stop                         # = local:apps:stop-all + local:docker:stop-all
 
 All scripts run from the repo root. The stack is split into two layers, driven directly:
 the **docker backing services** (`local:docker:*`, wrapping `docker-all-{up,down,status}.sh`)
-and the **apps** (`local:apps:*`, wrapping `apps-{up,down,status}.sh` — Spring services run
-**natively** via `mvn spring-boot:run`, portals via `ng serve`; PIDs + logs under
-`DevOps/Local/.run/`). `npm start` / `npm stop` exist only as an optional all-in-one shortcut.
+and the **apps** (`local:apps:*`, wrapping one script — `apps.sh start|stop|status` — where
+Spring services run **natively** via `mvn spring-boot:run` and portals via `ng serve`; PIDs +
+logs under `DevOps/Local/.run/`). `npm start` / `npm stop` exist only as an optional shortcut.
 
 | Script | Action |
 |--------|--------|
