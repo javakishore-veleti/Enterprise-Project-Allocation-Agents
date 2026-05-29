@@ -7,7 +7,9 @@
 # Usage:
 #   docker-all-up.sh [target]
 # Targets:
-#   all            infra + airflow + agents + middleware + portals  (default)
+#   all            docker + apps  (default)
+#   docker         infra + airflow + vectordb + datalake + agents  (backing layer)
+#   apps           middleware + portals  (Spring services + gateway, Angular portals)
 #   infra          postgres + observability
 #   postgres       postgres + pgvector + pgAdmin           (fully local image)
 #   observability  prometheus + jaeger + grafana + kibana (+ elasticsearch)
@@ -80,18 +82,28 @@ start_infra() {
   start_observability
 }
 
+# Backing docker layer: infra + python services (everything except the apps).
+start_docker() {
+  start_infra
+  up "$AIRFLOW_COMPOSE"  "airflow"
+  up "$QDRANT_COMPOSE"   "qdrant"
+  up "$DATALAKE_COMPOSE" "datalake-api"
+  up "$AGENTS_COMPOSE"   "agents"
+}
+
+# Application layer: the Spring Boot microservices + gateway, and the Angular portals.
+start_apps() {
+  up "$MIDDLEWARE_COMPOSE" "middleware"
+  up "$PORTALS_COMPOSE"    "portals"
+}
+
 ensure_env
 ensure_network
 
 case "$TARGET" in
-  all)
-    start_infra
-    up "$AIRFLOW_COMPOSE"    "airflow"
-    up "$DATALAKE_COMPOSE"   "datalake-api"
-    up "$AGENTS_COMPOSE"     "agents"
-    up "$MIDDLEWARE_COMPOSE" "middleware"
-    up "$PORTALS_COMPOSE"    "portals"
-    ;;
+  all)            start_docker; start_apps ;;
+  docker)         start_docker ;;
+  apps)           start_apps ;;
   infra)          start_infra ;;
   postgres)       up "$POSTGRES_COMPOSE" "postgres+pgvector" ;;
   observability)  start_observability ;;
@@ -101,7 +113,7 @@ case "$TARGET" in
   agents)         up "$AGENTS_COMPOSE"     "agents" ;;
   middleware)     up "$MIDDLEWARE_COMPOSE" "middleware" ;;
   portals)        up "$PORTALS_COMPOSE"    "portals" ;;
-  *) die "unknown target '$TARGET' (try: all|infra|postgres|observability|airflow|datalake|vectordb|agents|middleware|portals)" ;;
+  *) die "unknown target '$TARGET' (try: all|docker|apps|infra|postgres|observability|airflow|datalake|vectordb|agents|middleware|portals)" ;;
 esac
 
 log "up complete. Run 'bash DevOps/Local/docker-all-status.sh' to check health."

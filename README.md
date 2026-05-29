@@ -185,23 +185,27 @@ npm stop             # stop & tear down the full stack
 ## npm scripts reference
 
 All scripts run from the repo root and wrap `DevOps/Local/docker-all-{up,down,status}.sh`.
-Start a single layer when you only need part of the stack:
+The stack is split into two layers — the **docker** backing services and the **apps** —
+so `npm start` = `local:docker:start-all` + `local:apps:start-all`:
 
 | Script | Action |
 |--------|--------|
-| `npm start` / `npm stop` | **full stack** up / down (infra → airflow → datalake → agents → middleware → portals) |
+| `npm start` / `npm stop` | **full stack** up / down (`local:docker:*` then `local:apps:*`) |
 | `npm run status` | container health + local URLs |
 | `npm run seed` | seed synthetic data (POST `/synthetic/generate`) |
 | `npm run secrets:gen` | regenerate `application-local-secrets.yaml` from `.env` |
-| `npm run start:infra` / `stop:infra` | Postgres + observability |
-| `npm run start:postgres` / `stop:postgres` | Postgres + pgvector + pgAdmin |
-| `npm run start:observability` / `stop:observability` | Prometheus + Jaeger + Grafana + Kibana |
-| `npm run start:airflow` / `stop:airflow` | Airflow (Datalake DAG runtime) |
-| `npm run start:datalake` / `stop:datalake` | SyntheticDataAPI (FastAPI) |
-| `npm run start:vectordb` / `stop:vectordb` | Qdrant (optional, alt to pgvector) |
-| `npm run start:agents` / `stop:agents` | Python agents service |
-| `npm run start:middleware` / `stop:middleware` | the 6 Spring Boot services + API gateway |
-| `npm run start:portals` / `stop:portals` | both Angular portals (admin + customer) |
+| **Docker backing layer** | |
+| `npm run local:docker:start-all` / `:stop-all` | all backing containers (postgres, observability, airflow, vectordb, datalake, agents) |
+| `npm run local:docker:postgres:start` / `:stop` | Postgres + pgvector + pgAdmin |
+| `npm run local:docker:observability:start` / `:stop` | Prometheus + Jaeger + Grafana + Kibana |
+| `npm run local:docker:airflow:start` / `:stop` | Airflow (Datalake DAG runtime) |
+| `npm run local:docker:vectordb:start` / `:stop` | Qdrant (optional, alt to pgvector) |
+| `npm run local:docker:datalake:start` / `:stop` | SyntheticDataAPI (FastAPI) |
+| `npm run local:docker:agents:start` / `:stop` | Python agents service |
+| **Application layer** | |
+| `npm run local:apps:start-all` / `:stop-all` | all apps — internally runs middleware then portals |
+| `npm run local:apps:middleware:start-all` / `:stop-all` | the 6 Spring Boot services + API gateway (runs `secrets:gen` first) |
+| `npm run local:apps:portals:start-all` / `:stop-all` | both Angular portals (admin + customer) |
 
 ## Documentation
 

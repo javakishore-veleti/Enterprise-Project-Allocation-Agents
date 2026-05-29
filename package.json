@@ -15,39 +15,32 @@
   "scripts": {
     "secrets:gen": "node DevOps/Local/scripts/gen-spring-secrets.mjs",
 
-    "prestart": "npm run secrets:gen",
-    "start": "bash DevOps/Local/docker-all-up.sh all",
-    "stop": "bash DevOps/Local/docker-all-down.sh all",
+    "start": "npm run local:docker:start-all && npm run local:apps:start-all",
+    "stop": "npm run local:apps:stop-all && npm run local:docker:stop-all",
     "status": "bash DevOps/Local/docker-all-status.sh",
+    "seed": "curl -s -X POST http://localhost:8000/synthetic/generate",
 
-    "start:infra": "bash DevOps/Local/docker-all-up.sh infra",
-    "stop:infra": "bash DevOps/Local/docker-all-down.sh infra",
+    "local:docker:start-all": "bash DevOps/Local/docker-all-up.sh docker",
+    "local:docker:stop-all": "bash DevOps/Local/docker-all-down.sh docker",
+    "local:docker:postgres:start": "bash DevOps/Local/docker-all-up.sh postgres",
+    "local:docker:postgres:stop": "bash DevOps/Local/docker-all-down.sh postgres",
+    "local:docker:observability:start": "bash DevOps/Local/docker-all-up.sh observability",
+    "local:docker:observability:stop": "bash DevOps/Local/docker-all-down.sh observability",
+    "local:docker:airflow:start": "bash DevOps/Local/docker-all-up.sh airflow",
+    "local:docker:airflow:stop": "bash DevOps/Local/docker-all-down.sh airflow",
+    "local:docker:vectordb:start": "bash DevOps/Local/docker-all-up.sh vectordb",
+    "local:docker:vectordb:stop": "bash DevOps/Local/docker-all-down.sh vectordb",
+    "local:docker:datalake:start": "bash DevOps/Local/docker-all-up.sh datalake",
+    "local:docker:datalake:stop": "bash DevOps/Local/docker-all-down.sh datalake",
+    "local:docker:agents:start": "bash DevOps/Local/docker-all-up.sh agents",
+    "local:docker:agents:stop": "bash DevOps/Local/docker-all-down.sh agents",
 
-    "start:postgres": "bash DevOps/Local/docker-all-up.sh postgres",
-    "stop:postgres": "bash DevOps/Local/docker-all-down.sh postgres",
-
-    "start:observability": "bash DevOps/Local/docker-all-up.sh observability",
-    "stop:observability": "bash DevOps/Local/docker-all-down.sh observability",
-
-    "start:airflow": "bash DevOps/Local/docker-all-up.sh airflow",
-    "stop:airflow": "bash DevOps/Local/docker-all-down.sh airflow",
-
-    "start:datalake": "bash DevOps/Local/docker-all-up.sh datalake",
-    "stop:datalake": "bash DevOps/Local/docker-all-down.sh datalake",
-
-    "start:vectordb": "bash DevOps/Local/docker-all-up.sh vectordb",
-    "stop:vectordb": "bash DevOps/Local/docker-all-down.sh vectordb",
-
-    "start:agents": "bash DevOps/Local/docker-all-up.sh agents",
-    "stop:agents": "bash DevOps/Local/docker-all-down.sh agents",
-
-    "prestart:middleware": "npm run secrets:gen",
-    "start:middleware": "bash DevOps/Local/docker-all-up.sh middleware",
-    "stop:middleware": "bash DevOps/Local/docker-all-down.sh middleware",
-
-    "start:portals": "bash DevOps/Local/docker-all-up.sh portals",
-    "stop:portals": "bash DevOps/Local/docker-all-down.sh portals",
-
-    "seed": "curl -s -X POST http://localhost:8000/synthetic/generate"
-  }
+    "local:apps:start-all": "npm run local:apps:middleware:start-all && npm run local:apps:portals:start-all",
+    "local:apps:stop-all": "npm run local:apps:portals:stop-all && npm run local:apps:middleware:stop-all",
+    "local:apps:middleware:start-all": "npm run secrets:gen && bash DevOps/Local/docker-all-up.sh middleware",
+    "local:apps:middleware:stop-all": "bash DevOps/Local/docker-all-down.sh middleware",
+    "local:apps:portals:start-all": "bash DevOps/Local/docker-all-up.sh portals",
+    "local:apps:portals:stop-all": "bash DevOps/Local/docker-all-down.sh portals"
+  },
+  "scripts_comment": "npm start = local:docker:start-all (postgres, observability, airflow, vectordb, datalake, agents) + local:apps:start-all (middleware + portals). local:apps:start-all internally invokes middleware:start-all then portals:start-all. All scripts wrap DevOps/Local/docker-all-{up,down,status}.sh; middleware:start-all runs secrets:gen first."
 }

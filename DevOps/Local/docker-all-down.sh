@@ -5,7 +5,7 @@
 #
 # Usage:
 #   docker-all-down.sh [target] [--volumes]
-# Targets: all (default) | infra | postgres | observability | vectordb | agents | middleware | portals
+# Targets: all (default) | docker | apps | infra | postgres | observability | airflow | datalake | vectordb | agents | middleware | portals
 #
 set -uo pipefail
 
@@ -59,15 +59,25 @@ stop_infra() {
   down "$POSTGRES_COMPOSE" "postgres+pgvector"
 }
 
+# Application layer (stopped before the backing docker layer).
+stop_apps() {
+  down "$PORTALS_COMPOSE"    "portals"
+  down "$MIDDLEWARE_COMPOSE" "middleware"
+}
+
+# Backing docker layer: python services + infra (reverse of start_docker).
+stop_docker() {
+  down "$AGENTS_COMPOSE"   "agents"
+  down "$DATALAKE_COMPOSE" "datalake-api"
+  down "$QDRANT_COMPOSE"   "qdrant"
+  down "$AIRFLOW_COMPOSE"  "airflow"
+  stop_infra
+}
+
 case "$TARGET" in
-  all)
-    down "$PORTALS_COMPOSE"    "portals"
-    down "$MIDDLEWARE_COMPOSE" "middleware"
-    down "$AGENTS_COMPOSE"     "agents"
-    down "$DATALAKE_COMPOSE"   "datalake-api"
-    down "$AIRFLOW_COMPOSE"    "airflow"
-    stop_infra
-    ;;
+  all)            stop_apps; stop_docker ;;
+  docker)         stop_docker ;;
+  apps)           stop_apps ;;
   infra)          stop_infra ;;
   postgres)       down "$POSTGRES_COMPOSE" "postgres+pgvector" ;;
   observability)  stop_observability ;;
@@ -80,8 +90,8 @@ case "$TARGET" in
   *) echo "unknown target '$TARGET'" >&2; exit 1 ;;
 esac
 
-# Remove the shared network when nothing is attached (best-effort, only on full down).
-if [[ "$TARGET" == "all" ]]; then
+# Remove the shared network when nothing is attached (best-effort, on full/backing down).
+if [[ "$TARGET" == "all" || "$TARGET" == "docker" ]]; then
   if docker network inspect "$NETWORK" >/dev/null 2>&1; then
     docker network rm "$NETWORK" >/dev/null 2>&1 && log "removed network $NETWORK" || warn "network $NETWORK still in use — left in place"
   fi
