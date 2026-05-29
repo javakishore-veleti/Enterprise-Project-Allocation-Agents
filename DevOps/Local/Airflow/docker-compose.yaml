@@ -15,10 +15,13 @@ x-airflow-common: &airflow-common
     AIRFLOW__CORE__LOAD_EXAMPLES: "false"
     AIRFLOW__API__AUTH_BACKENDS: "airflow.api.auth.backend.session,airflow.api.auth.backend.basic_auth"
     AIRFLOW__WEBSERVER__EXPOSE_CONFIG: "true"
-    # Make the epaa_datalake package (mounted below) importable by the DAG.
+    # Make the epaa_datalake source (mounted below) importable by the DAG tasks.
     PYTHONPATH: /opt/airflow/epaa_src
-    # Extra deps the generators need (installed at container start — local only).
-    _PIP_ADDITIONAL_REQUIREMENTS: "faker>=30 sqlalchemy>=2.0 psycopg2-binary>=2.9 pgvector>=0.3 boto3>=1.35 pydantic-settings>=2.5 alembic>=1.13"
+    # Airflow 2.10 pins SQLAlchemy 1.4, but the generators need SQLAlchemy 2.0.
+    # Installing 2.0 into Airflow core breaks it (MappedAnnotationError), so we DON'T
+    # install the generator deps here — the DAG runs generation in an isolated
+    # virtualenv (@task.virtualenv, cached under /tmp). Core only needs `virtualenv`.
+    _PIP_ADDITIONAL_REQUIREMENTS: "virtualenv"
     # App DB the DAG writes synthetic data into (read by epaa_datalake.config).
     POSTGRES_HOST: epaa-postgres
     POSTGRES_PORT: "5432"

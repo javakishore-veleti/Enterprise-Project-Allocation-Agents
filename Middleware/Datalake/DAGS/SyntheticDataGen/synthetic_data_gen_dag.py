@@ -1,11 +1,15 @@
 """Airflow DAG: generate + load EPAA synthetic data.
 
 Triggered by the SyntheticDataAPI (or manually). Run-time parameters come from
-``dag_run.conf`` (num_employees, num_projects, seed, use_llm).
+``dag_run.conf`` (num_employees, num_projects, seed, use_llm, reset).
 
-The generation logic is the same ``epaa_datalake`` package the API uses; it is
-available on PYTHONPATH because the Airflow compose mounts the SyntheticDataAPI
-``src/`` into the containers.
+Version note: Airflow 2.10 pins SQLAlchemy 1.4, but the ``epaa_datalake`` generators
+require SQLAlchemy 2.0 (declarative ``mapped_column`` models). To avoid breaking
+Airflow core, the migrate/generate steps run in an **isolated virtualenv**
+(``@task.virtualenv``) that installs the generator deps and adds the bind-mounted
+``epaa_datalake`` source (``/opt/airflow/epaa_src``) to ``sys.path``. The container's
+POSTGRES_*/EMBEDDING_* env vars are inherited by the subprocess, so
+``epaa_datalake.config`` resolves the same app DB.
 """
 from __future__ import annotations
 
@@ -13,7 +17,17 @@ import datetime as dt
 
 from airflow.decorators import dag, task
 
-DEFAULT_CONF = {"num_employees": 60, "num_projects": 20, "seed": 42, "use_llm": False}
+# Deps for the isolated generation venv (kept off Airflow core, which needs SQLAlchemy 1.4).
+GEN_REQUIREMENTS = [
+    "faker>=30",
+    "sqlalchemy>=2.0",
+    "psycopg2-binary>=2.9",
+    "pgvector>=0.3",
+    "boto3>=1.35",
+    "pydantic-settings>=2.5",
+    "alembic>=1.13",
+]
+VENV_CACHE = "/tmp/epaa-gen-venv"  # writable by the airflow user; reused within a container's life
 
 
 @dag(
@@ -21,23 +35,33 @@ DEFAULT_CONF = {"num_employees": 60, "num_projects": 20, "seed": 42, "use_llm": 
     schedule=None,                       # triggered on demand
     start_date=dt.datetime(2026, 1, 1),
     catchup=False,
+    is_paused_upon_creation=False,       # active on first parse so API-triggered runs execute
     tags=["epaa", "datalake", "synthetic"],
     default_args={"retries": 0},
 )
 def synthetic_data_gen():
-    @task
+    @task.virtualenv(requirements=GEN_REQUIREMENTS, system_site_packages=False,
+                     venv_cache_path=VENV_CACHE)
     def migrate() -> str:
+        import sys
+        sys.path.insert(0, "/opt/airflow/epaa_src")
         from epaa_datalake.startup import run_migrations
 
         run_migrations()
         return "migrated"
 
-    @task
-    def generate(_upstream: str, **context) -> dict:
+    @task.virtualenv(requirements=GEN_REQUIREMENTS, system_site_packages=False,
+                     venv_cache_path=VENV_CACHE)
+    def generate(_upstream: str, conf_json: str) -> dict:
+        import json
+        import sys
+        sys.path.insert(0, "/opt/airflow/epaa_src")
         from epaa_datalake.generators.pipeline import run as run_pipeline
         from epaa_datalake.generators.structured import GenSpec
 
-        conf = {**DEFAULT_CONF, **(context["dag_run"].conf or {})}
+        defaults = {"num_employees": 60, "num_projects": 20, "seed": 42,
+                    "use_llm": False, "reset": True}
+        conf = {**defaults, **(json.loads(conf_json) if conf_json else {})}
         spec = GenSpec(
             num_employees=int(conf["num_employees"]),
             num_projects=int(conf["num_projects"]),
@@ -48,7 +72,8 @@ def synthetic_data_gen():
         print("Synthetic data load summary:", summary)
         return summary
 
-    generate(migrate())
+    # dag_run.conf is passed as a JSON string (templated) so the venv subprocess can parse it.
+    generate(migrate(), conf_json="{{ dag_run.conf | tojson }}")
 
 
 synthetic_data_gen()
