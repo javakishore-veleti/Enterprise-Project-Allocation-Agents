@@ -39,11 +39,11 @@
 
     "local:apps:start-all": "npm run local:apps:middleware:start-all && npm run local:apps:portals:start-all",
     "local:apps:stop-all": "npm run local:apps:portals:stop-all && npm run local:apps:middleware:stop-all",
-    "local:apps:status-all": "bash DevOps/Local/docker-all-status.sh apps",
-    "local:apps:middleware:start-all": "npm run secrets:gen && bash DevOps/Local/docker-all-up.sh middleware",
-    "local:apps:middleware:stop-all": "bash DevOps/Local/docker-all-down.sh middleware",
-    "local:apps:portals:start-all": "bash DevOps/Local/docker-all-up.sh portals",
-    "local:apps:portals:stop-all": "bash DevOps/Local/docker-all-down.sh portals"
+    "local:apps:status-all": "bash DevOps/Local/apps-status.sh all",
+    "local:apps:middleware:start-all": "npm run secrets:gen && bash DevOps/Local/apps-up.sh middleware",
+    "local:apps:middleware:stop-all": "bash DevOps/Local/apps-down.sh middleware",
+    "local:apps:portals:start-all": "bash DevOps/Local/apps-up.sh portals",
+    "local:apps:portals:stop-all": "bash DevOps/Local/apps-down.sh portals"
   },
-  "scripts_comment": "npm start = local:docker:start-all (postgres, observability, airflow, vectordb, datalake, agents) + local:apps:start-all (middleware + portals). local:apps:start-all internally invokes middleware:start-all then portals:start-all. All scripts wrap DevOps/Local/docker-all-{up,down,status}.sh; middleware:start-all runs secrets:gen first."
+  "scripts_comment": "local:docker:* run the backing layer (postgres, observability, airflow, vectordb, datalake, agents) in Docker. local:apps:* run the 6 Spring services NATIVELY via mvn spring-boot:run and the 2 Angular portals via ng serve (DevOps/Local/apps-{up,down,status}.sh; PIDs/logs under DevOps/Local/.run/). Needs host JDK 21 + Maven + Node. middleware:start-all runs secrets:gen first; DB_PROFILE=postgres points Spring at the Dockerized Postgres on localhost. npm start = local:docker:start-all + local:apps:start-all."
 }

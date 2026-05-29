@@ -128,16 +128,17 @@ the popular options as of early 2026 (fuller writeup in
 
 ## Prerequisites
 
-The repo is **local-first** — the whole stack runs in Docker, orchestrated from the
-root `package.json`. You need:
+The repo is **local-first**, orchestrated from the root `package.json` as two layers:
+the **backing services** run in Docker (`local:docker:*`); the **apps** run **natively**
+on the host (`local:apps:*` — Spring via `mvn spring-boot:run`, portals via `ng serve`).
+You need:
 
-- **Docker** + Docker Compose (running)
-- **Node.js 20+** and **npm** (to run the root `package.json` scripts)
+- **Docker** + Docker Compose (running) — for the backing layer (Postgres, agents,
+  Datalake, Airflow, observability)
+- **JDK 21** + **Maven 3.9+** — to run the 6 Spring Boot services natively
+- **Node.js 20+** + **npm** — for the root scripts and to run the 2 Angular portals (`ng serve`)
 - Bedrock (Claude Opus 4.7, `us-east-1`) is only needed for *live* LLM/embeddings — the
-  agents fall back to an offline heuristic + hash embeddings, and the Spring services
-  default to **H2**, so Postgres is only required for the agents/embeddings + Datalake.
-- Optional for non-Docker dev only: Python 3.12, JDK 21 (the container images build
-  those internally, so you don't need them on the host for `npm start`).
+  agents fall back to an offline heuristic + hash embeddings.
 
 Default ports: `8080` gateway · `4200`/`4201` portals · `5432` Postgres · `8000`
 Datalake · `8001` Agents · `8088` Airflow · `16686` Jaeger · `3000` Grafana.
@@ -226,10 +227,11 @@ npm stop                         # = local:apps:stop-all + local:docker:stop-all
 
 ## npm scripts reference
 
-All scripts run from the repo root and wrap `DevOps/Local/docker-all-{up,down,status}.sh`.
-The stack is split into two layers — the **docker** backing services (`local:docker:*`)
-and the **apps** (`local:apps:*`) — and you normally drive those directly. `npm start` /
-`npm stop` exist only as an optional all-in-one shortcut for both layers.
+All scripts run from the repo root. The stack is split into two layers, driven directly:
+the **docker backing services** (`local:docker:*`, wrapping `docker-all-{up,down,status}.sh`)
+and the **apps** (`local:apps:*`, wrapping `apps-{up,down,status}.sh` — Spring services run
+**natively** via `mvn spring-boot:run`, portals via `ng serve`; PIDs + logs under
+`DevOps/Local/.run/`). `npm start` / `npm stop` exist only as an optional all-in-one shortcut.
 
 | Script | Action |
 |--------|--------|
@@ -241,10 +243,10 @@ and the **apps** (`local:apps:*`) — and you normally drive those directly. `np
 | `npm run local:docker:vectordb:start` / `:stop` | Qdrant (optional, alt to pgvector) |
 | `npm run local:docker:datalake:start` / `:stop` | SyntheticDataAPI (FastAPI) |
 | `npm run local:docker:agents:start` / `:stop` | Python agents service |
-| **Application layer** | |
+| **Application layer (native)** | |
 | `npm run local:apps:start-all` / `:stop-all` / `:status-all` | all apps — internally runs middleware then portals |
-| `npm run local:apps:middleware:start-all` / `:stop-all` | the 6 Spring Boot services + API gateway (runs `secrets:gen` first) |
-| `npm run local:apps:portals:start-all` / `:stop-all` | both Angular portals (admin + customer) |
+| `npm run local:apps:middleware:start-all` / `:stop-all` | the 6 Spring Boot services + API gateway, native via `mvn spring-boot:run` (runs `secrets:gen` first) |
+| `npm run local:apps:portals:start-all` / `:stop-all` | both Angular portals (admin + customer), native via `ng serve` |
 | **Utilities & shortcuts** | |
 | `npm run status` (or `local:status`) | container health + local URLs (all layers; per-layer via `local:docker:status-all` / `local:apps:status-all`) |
 | `npm run seed` | headless shortcut to seed synthetic data — same `POST /synthetic/generate` the Admin portal's **Data Management → Initiate Execution** triggers |

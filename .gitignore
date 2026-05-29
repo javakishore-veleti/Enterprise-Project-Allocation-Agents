@@ -118,3 +118,6 @@ SyntheticData/generated/
 # ─────────────────────────────────────────────────────────────
 .DS_Store
 Thumbs.db
+
+# Native-apps runtime (apps-up.sh): PIDs + logs
+DevOps/Local/.run/
