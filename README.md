@@ -205,19 +205,20 @@ under **History**. (Headless shortcut for the same endpoint: `npm run seed`.)
 
 ## Daily running
 
-Everything is controlled through the root `package.json` — **one command boots all six
-microservices and both portals** (no need to start anything individually):
+Everything is controlled through the root `package.json`. Drive the two layers directly —
+the docker backing services (`local:docker:*`) and the apps (`local:apps:*`):
 
 ```bash
-npm start            # FULL stack: docker backing layer + apps (all microservices + both portals)
-npm run status       # health of every container + handy local URLs
-npm stop             # stop & tear down the full stack
+npm run local:docker:start-all   # backing services (postgres, observability, airflow, vectordb, datalake, agents)
+npm run local:apps:start-all     # the apps — runs middleware:start-all then portals:start-all
+npm run status                   # health of every container + handy local URLs
 
-# Or control the two layers independently:
-npm run local:docker:start-all   # backing services only (postgres, observability, airflow, vectordb, datalake, agents)
-npm run local:apps:start-all     # the apps only — runs middleware:start-all then portals:start-all
 npm run local:apps:stop-all      # stop just the apps (e.g. to rebuild) while backing services keep running
 npm run local:docker:stop-all    # stop just the backing services
+
+# Optional all-in-one shortcut (runs both layers in order):
+npm start                        # = local:docker:start-all + local:apps:start-all
+npm stop                         # = local:apps:stop-all + local:docker:stop-all
 ```
 
 > Fastest sanity check: `bash DevOps/Local/smoke-test.sh` runs the paper's core flow
@@ -226,15 +227,12 @@ npm run local:docker:stop-all    # stop just the backing services
 ## npm scripts reference
 
 All scripts run from the repo root and wrap `DevOps/Local/docker-all-{up,down,status}.sh`.
-The stack is split into two layers — the **docker** backing services and the **apps** —
-so `npm start` = `local:docker:start-all` + `local:apps:start-all`:
+The stack is split into two layers — the **docker** backing services (`local:docker:*`)
+and the **apps** (`local:apps:*`) — and you normally drive those directly. `npm start` /
+`npm stop` exist only as an optional all-in-one shortcut for both layers.
 
 | Script | Action |
 |--------|--------|
-| `npm start` / `npm stop` | **full stack** up / down (`local:docker:*` then `local:apps:*`) |
-| `npm run status` | container health + local URLs |
-| `npm run seed` | headless shortcut to seed synthetic data — same `POST /synthetic/generate` the Admin portal's **Data Management → Initiate Execution** triggers |
-| `npm run secrets:gen` | regenerate `application-local-secrets.yaml` from `.env` |
 | **Docker backing layer** | |
 | `npm run local:docker:start-all` / `:stop-all` | all backing containers (postgres, observability, airflow, vectordb, datalake, agents) |
 | `npm run local:docker:postgres:start` / `:stop` | Postgres + pgvector + pgAdmin |
@@ -247,6 +245,11 @@ so `npm start` = `local:docker:start-all` + `local:apps:start-all`:
 | `npm run local:apps:start-all` / `:stop-all` | all apps — internally runs middleware then portals |
 | `npm run local:apps:middleware:start-all` / `:stop-all` | the 6 Spring Boot services + API gateway (runs `secrets:gen` first) |
 | `npm run local:apps:portals:start-all` / `:stop-all` | both Angular portals (admin + customer) |
+| **Utilities & shortcuts** | |
+| `npm run status` | container health + local URLs |
+| `npm run seed` | headless shortcut to seed synthetic data — same `POST /synthetic/generate` the Admin portal's **Data Management → Initiate Execution** triggers |
+| `npm run secrets:gen` | regenerate `application-local-secrets.yaml` from `.env` |
+| `npm start` / `npm stop` | *optional* all-in-one shortcut — both layers (`local:docker:*` then `local:apps:*`; reversed for stop) |
 
 ## Documentation
 
