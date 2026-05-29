@@ -155,10 +155,7 @@ cp .env.example .env          # then fill in AWS values if you want live Bedrock
 #    step runs secrets:gen first to materialise application-local-secrets.yaml from .env.
 npm start
 
-# 3. Seed synthetic data — triggers the SyntheticDataGen Airflow DAG via the Datalake API
-npm run seed
-
-# 4. Confirm health, then open the portals
+# 3. Confirm health, then open the portals
 npm run status
 #    Admin portal     → http://localhost:4200
 #    Customer portal  → http://localhost:4201
@@ -169,6 +166,12 @@ npm run status
 
 Migrations auto-apply on startup (Liquibase for Spring, Alembic for Python) for both H2
 and Postgres, so the stack is usable as soon as it reports healthy.
+
+**Seed synthetic data from the Admin portal** (the intended flow): open
+**Data Management → Synthetic Data**, pick the *SyntheticDataGen* workflow from the
+searchable dropdown, set your criteria, and click **Initiate Execution** — this triggers
+the Airflow DAG via the Datalake API (`POST /synthetic/generate`) and the run appears
+under **History**. (Headless shortcut for the same endpoint: `npm run seed`.)
 
 ## Daily running
 
@@ -198,7 +201,7 @@ so `npm start` = `local:docker:start-all` + `local:apps:start-all`:
 |--------|--------|
 | `npm start` / `npm stop` | **full stack** up / down (`local:docker:*` then `local:apps:*`) |
 | `npm run status` | container health + local URLs |
-| `npm run seed` | seed synthetic data (POST `/synthetic/generate`) |
+| `npm run seed` | headless shortcut to seed synthetic data — same `POST /synthetic/generate` the Admin portal's **Data Management → Initiate Execution** triggers |
 | `npm run secrets:gen` | regenerate `application-local-secrets.yaml` from `.env` |
 | **Docker backing layer** | |
 | `npm run local:docker:start-all` / `:stop-all` | all backing containers (postgres, observability, airflow, vectordb, datalake, agents) |
