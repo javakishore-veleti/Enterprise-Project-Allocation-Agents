@@ -16,6 +16,7 @@ Free-text project briefs go in; an LLM-driven team of six autonomous agents pars
 - [Multi-agent orchestration frameworks](#multi-agent-orchestration-frameworks)
 - [Repository layout](#repository-layout)
 - [Prerequisites](#prerequisites)
+- [Configuration (.env)](#configuration-env)
 - [First time running the application](#first-time-running-the-application)
 - [Daily running](#daily-running)
 - [npm scripts reference](#npm-scripts-reference)
@@ -141,21 +142,50 @@ root `package.json`. You need:
 Default ports: `8080` gateway · `4200`/`4201` portals · `5432` Postgres · `8000`
 Datalake · `8001` Agents · `8088` Airflow · `16686` Jaeger · `3000` Grafana · `5050` pgAdmin.
 
+## Configuration (`.env`)
+
+`.env` (git-ignored) is created from `.env.example` — the start scripts also auto-create
+it if missing. **It runs as-is with no edits**: with no AWS credentials the agents fall
+back to an offline heuristic LLM + hash embeddings, and the Spring services default to
+in-memory H2. Edit `.env` only to enable live Bedrock or to change a default. The
+settings that matter most:
+
+| Variable | Default | What it controls |
+|----------|---------|------------------|
+| `DB_PROFILE` | `h2` | Spring DB: `h2` (in-memory, no Postgres needed) or `postgres`. Agents/Datalake always use Postgres+pgvector regardless. |
+| `LLM_PROVIDER` | `auto` | Reasoning LLM backend: `auto` / `strands` / `bedrock` / `langchain` / `openai` / `ollama` / `heuristic`. Falls back to offline `heuristic` with no AWS. |
+| `EMBEDDING_PROVIDER` | `bedrock` | Skill-matching embeddings: `bedrock` (Titan v2), `hf` (MiniLM), or `hash` (offline deterministic). |
+| `ORCHESTRATOR` | `custom` | Pipeline engine: `custom` (hand-rolled v1) or `langgraph` (v2 graph; needs the langgraph extra). |
+| `AWS_REGION` / `AWS_PROFILE` | `us-east-1` / `default` | AWS region + credentials profile — only needed for live Bedrock. |
+| `BEDROCK_MODEL_ID` | Claude Opus 4.7 | Bedrock reasoning model id. |
+| `BEDROCK_EMBEDDING_MODEL_ID` | Titan v2 | Bedrock embeddings model id. |
+| `POSTGRES_HOST/PORT/DB/USER/PASSWORD` | `localhost`/`5432`/`epaa`/`epaa`/… | Postgres connection (agents/Datalake always; Spring when `DB_PROFILE=postgres`). Set a real password. |
+| `*_PORT` (gateway, portals, services, observability, Airflow) | see `.env.example` | Host ports — change any that clash locally. |
+| `NOTIFICATION_CHANNEL` | `log` | Communication Agent delivery: `log` (local stub) or SES (AWS). |
+
+> **Fully offline (no AWS):** set `LLM_PROVIDER=heuristic` and `EMBEDDING_PROVIDER=hash`.
+> **Live Bedrock:** set `AWS_PROFILE`/`AWS_REGION` (with valid credentials) and keep
+> `LLM_PROVIDER=auto` (or `bedrock`) + `EMBEDDING_PROVIDER=bedrock`.
+
+`application-local-secrets.yaml` for the Spring services is generated from `.env` by
+`npm run secrets:gen` (run automatically as part of `local:apps:middleware:start-all`).
+
 ## First time running the application
 
 Run these **once** to bootstrap, then switch to [Daily running](#daily-running):
 
 ```bash
-# 1. Configure environment (npm start also auto-creates .env from .env.example if missing)
-cp .env.example .env          # then fill in AWS values if you want live Bedrock
+# 1. Create your env file (runs as-is; see "Configuration (.env)" above for what to edit)
+cp .env.example .env
 
-# 2. Bring the WHOLE stack up = docker backing layer, then apps.
-#    npm start -> local:docker:start-all (postgres, observability, airflow, vectordb,
-#    datalake, agents) then local:apps:start-all (middleware + portals). The middleware
-#    step runs secrets:gen first to materialise application-local-secrets.yaml from .env.
-npm start
+# 2. Start the docker backing layer (postgres, observability, airflow, vectordb, datalake, agents)
+npm run local:docker:start-all
 
-# 3. Confirm health, then open the portals
+# 3. Start the apps (middleware + portals; runs secrets:gen first)
+npm run local:apps:start-all
+#    — shortcut for steps 2 + 3 together: npm start
+
+# 4. Confirm health, then open the portals
 npm run status
 #    Admin portal     → http://localhost:4200
 #    Customer portal  → http://localhost:4201
@@ -186,6 +216,8 @@ npm stop             # stop & tear down the full stack
 # Or control the two layers independently:
 npm run local:docker:start-all   # backing services only (postgres, observability, airflow, vectordb, datalake, agents)
 npm run local:apps:start-all     # the apps only — runs middleware:start-all then portals:start-all
+npm run local:apps:stop-all      # stop just the apps (e.g. to rebuild) while backing services keep running
+npm run local:docker:stop-all    # stop just the backing services
 ```
 
 > Fastest sanity check: `bash DevOps/Local/smoke-test.sh` runs the paper's core flow
