@@ -1,7 +1,8 @@
 name: epaa-postgres
 
 # Postgres 16 with the pgvector extension pre-installed (Skill-Matching Agent
-# stores employee/requirement embeddings here). pgAdmin is included for a UI.
+# stores employee/requirement embeddings here). Use any local Postgres client
+# (psql, pgAdmin, DBeaver) against localhost:5432 — no UI container is shipped.
 
 services:
   postgres:
@@ -23,24 +24,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    networks:
-      - epaa-net
-
-  pgadmin:
-    image: dpage/pgadmin4:8.12
-    pull_policy: missing
-    container_name: epaa-pgadmin
-    restart: unless-stopped
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@epaa.local}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
-      PGADMIN_CONFIG_SERVER_MODE: "False"
-      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
-    ports:
-      - "${PGADMIN_PORT:-5050}:80"
-    depends_on:
-      postgres:
-        condition: service_healthy
     networks:
       - epaa-net
 

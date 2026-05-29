@@ -29,7 +29,6 @@ echo
 log "Local URLs (once the matching layer is up)"
 cat <<'EOF'
   Postgres        localhost:5432   (db/user: epaa)
-  pgAdmin         http://localhost:5050
   Prometheus      http://localhost:9090
   Grafana         http://localhost:3000   (admin/admin)
   Jaeger UI       http://localhost:16686

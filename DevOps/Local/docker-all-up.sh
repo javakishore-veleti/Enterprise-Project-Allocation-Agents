@@ -11,7 +11,7 @@
 #   docker         infra + airflow + vectordb + datalake + agents  (backing layer)
 #   apps           middleware + portals  (Spring services + gateway, Angular portals)
 #   infra          postgres + observability
-#   postgres       postgres + pgvector + pgAdmin           (fully local image)
+#   postgres       postgres + pgvector                     (fully local image)
 #   observability  prometheus + jaeger + grafana + kibana (+ elasticsearch)
 #   airflow        apache airflow (datalake runtime; reuses your local image)
 #   datalake       SyntheticDataAPI (FastAPI; triggers the SyntheticDataGen DAG)

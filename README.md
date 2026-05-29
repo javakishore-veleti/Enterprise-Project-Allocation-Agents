@@ -140,7 +140,7 @@ root `package.json`. You need:
   those internally, so you don't need them on the host for `npm start`).
 
 Default ports: `8080` gateway · `4200`/`4201` portals · `5432` Postgres · `8000`
-Datalake · `8001` Agents · `8088` Airflow · `16686` Jaeger · `3000` Grafana · `5050` pgAdmin.
+Datalake · `8001` Agents · `8088` Airflow · `16686` Jaeger · `3000` Grafana.
 
 ## Configuration (`.env`)
 
@@ -235,7 +235,7 @@ and the **apps** (`local:apps:*`) — and you normally drive those directly. `np
 |--------|--------|
 | **Docker backing layer** | |
 | `npm run local:docker:start-all` / `:stop-all` | all backing containers (postgres, observability, airflow, vectordb, datalake, agents) |
-| `npm run local:docker:postgres:start` / `:stop` | Postgres + pgvector + pgAdmin |
+| `npm run local:docker:postgres:start` / `:stop` | Postgres + pgvector |
 | `npm run local:docker:observability:start` / `:stop` | Prometheus + Jaeger + Grafana + Kibana |
 | `npm run local:docker:airflow:start` / `:stop` | Airflow (Datalake DAG runtime) |
 | `npm run local:docker:vectordb:start` / `:stop` | Qdrant (optional, alt to pgvector) |

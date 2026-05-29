@@ -189,7 +189,7 @@ AutomatedEnterpriseProjectAllocation/
 │   │   ├── scripts/
 │   │   │   └── gen-spring-secrets.mjs    # generate application-local-secrets.yaml from .env
 │   │   ├── Postgres/
-│   │   │   ├── docker-compose.yaml       # pgvector/pgvector:pg16 + pgAdmin
+│   │   │   ├── docker-compose.yaml       # pgvector/pgvector:pg16
 │   │   │   └── init/
 │   │   │       ├── 01-extensions.sql     # vector, uuid-ossp, pg_trgm
 │   │   │       └── 02-schema.sql         # epaa schema (tables in M2)
@@ -277,7 +277,7 @@ Legend: `[ ]` pending · `[~]` in progress · `[x]` complete · `[-]` deferred
 
 | # | Task | Status |
 |---|------|--------|
-| 1.1 | `DevOps/Local/Postgres/docker-compose.yaml` (pgvector/pgvector:pg16 + pgAdmin) | [x] |
+| 1.1 | `DevOps/Local/Postgres/docker-compose.yaml` (pgvector/pgvector:pg16) | [x] |
 | 1.2 | `init/01-extensions.sql` (vector, uuid-ossp, pg_trgm) + `init/02-schema.sql` (epaa schema) | [x] |
 | 1.3 | `DevOps/Local/Observability/Prometheus/` + `prometheus.yml` | [x] |
 | 1.4 | `DevOps/Local/Observability/Grafana/` + provisioned datasources (Prometheus + Jaeger) | [x] |

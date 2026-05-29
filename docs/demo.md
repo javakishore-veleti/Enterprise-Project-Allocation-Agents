@@ -42,7 +42,7 @@ Local URLs:
 | Agents API | http://localhost:8001 |
 | Datalake API | http://localhost:8000 |
 | Airflow | http://localhost:8088 (admin/admin) |
-| Jaeger | http://localhost:16686 · Grafana :3000 · Prometheus :9090 · Kibana :5601 · pgAdmin :5050 |
+| Jaeger | http://localhost:16686 · Grafana :3000 · Prometheus :9090 · Kibana :5601 |
 
 > First `npm run start` builds the 6 Spring + 2 Angular images (several minutes). The
 > Spring services run on shared Postgres in this mode (`SPRING_DATASOURCE_*`).
