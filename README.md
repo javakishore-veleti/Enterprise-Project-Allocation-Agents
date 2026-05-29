@@ -149,8 +149,10 @@ Run these **once** to bootstrap, then switch to [Daily running](#daily-running):
 # 1. Configure environment (npm start also auto-creates .env from .env.example if missing)
 cp .env.example .env          # then fill in AWS values if you want live Bedrock
 
-# 2. Bring the WHOLE stack up: infra → airflow → datalake → agents → middleware → portals.
-#    'prestart' runs secrets:gen first to materialise application-local-secrets.yaml from .env.
+# 2. Bring the WHOLE stack up = docker backing layer, then apps.
+#    npm start -> local:docker:start-all (postgres, observability, airflow, vectordb,
+#    datalake, agents) then local:apps:start-all (middleware + portals). The middleware
+#    step runs secrets:gen first to materialise application-local-secrets.yaml from .env.
 npm start
 
 # 3. Seed synthetic data — triggers the SyntheticDataGen Airflow DAG via the Datalake API
@@ -174,9 +176,13 @@ Everything is controlled through the root `package.json` — **one command boots
 microservices and both portals** (no need to start anything individually):
 
 ```bash
-npm start            # start the FULL stack in docker (all microservices + both portals)
+npm start            # FULL stack: docker backing layer + apps (all microservices + both portals)
 npm run status       # health of every container + handy local URLs
 npm stop             # stop & tear down the full stack
+
+# Or control the two layers independently:
+npm run local:docker:start-all   # backing services only (postgres, observability, airflow, vectordb, datalake, agents)
+npm run local:apps:start-all     # the apps only — runs middleware:start-all then portals:start-all
 ```
 
 > Fastest sanity check: `bash DevOps/Local/smoke-test.sh` runs the paper's core flow
